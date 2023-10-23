@@ -2,13 +2,22 @@
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
-  name: todo-pipeline
+  name: todo-pipeline-run
   namespace: todo-app
 spec:
   pipelineRef:
     name: todo-pipeline
+  params:
+    - name: GIT_REPO
+      value: "https://github.com/secangkirkopipanas/todo-application.git"
+    - name: GIT_REF
+      value: develop
+    - name: APP_VERSION
+      value: "0.0.1-SNAPSHOT"
   workspaces:
     - name: shared-workspace
-      emptyDir: {}
-    - name: container-registry-secret
-      emptyDir: {}
+      persistentVolumeClaim:
+        claimName: todo-repo
+    - name: maven-local-repo
+      persistentVolumeClaim:
+        claimName: maven-local-repo

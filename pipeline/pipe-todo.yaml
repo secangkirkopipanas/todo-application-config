@@ -5,11 +5,15 @@ metadata:
   namespace: todo-app
 spec:
   params:
-    - name: git-repo
+    - name: GIT_REPO
       type: string
       default: "https://github.com/secangkirkopipanas/todo-application.git"
       description: "Git repository"
-    - name: version
+    - name: GIT_REF
+      type: string
+      default: develop
+      description: "Git ref"
+    - name: APP_VERSION
       type: string
       default: "0.0.1-SNAPSHOT"
       description: "Application version"
@@ -17,27 +21,40 @@ spec:
     - name: shared-workspace
       description: | 
         This workspace contains source code, so they can be read by the next task.
-    - name: container-registry-secret
-      description: "Container registry secret"
+    - name: maven-local-repo
+      description: | 
+        This workspace contains all Maven dependencies used by the application.
   tasks:
+    - name: fetch-source
+      params:
+      - name: url
+        value: $(params.GIT_REPO)
+      - name: revision
+        value: $(params.GIT_REF)
+      - name: deleteExisting
+        value: "true"
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-workspace
     - name: source-to-image
       taskRef:
         name: s2i-java
+      runAfter:
+        - fetch-source
       workspaces:
         - name: source
           workspace: shared-workspace
+        - name: maven-local-repo
+          workspace: maven-local-repo
       params:
         - name: APP_NAME
           value: todo
-        - name: GIT_REPO
-          value: $(params.git-repo)
-        - name: GIT_REVISION
-          value: develop
         - name: IMAGE
-          value: quay.io/rh_rh/todo:$(params.version)
+          value: quay.io/rh_rh/todo:$(params.APP_VERSION)
         - name: TLSVERIFY
           value: "false"
         - name: VERSION
           value: latest
-        - name: MAVEN_ARGS_APPEND
-          value: -Xms1G -Xmx1G

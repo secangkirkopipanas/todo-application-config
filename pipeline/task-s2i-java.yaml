@@ -14,47 +14,51 @@ spec:
     s2i-java task clones a Git repository and builds and pushes a container
     image using S2I and a Java builder image.
   params:
-    - default: latest
+    - name: VERSION
+      default: latest
       description: The tag of java imagestream for java version
-      name: VERSION
       type: string
-    - default: .
+    - name: PATH_CONTEXT
+      default: .
       description: The location of the path to run s2i from
-      name: PATH_CONTEXT
       type: string
-    - default: 'true'
+    - name: TLSVERIFY
+      default: 'true'
       description: >-
         Verify the TLS on the registry endpoint (for push/pull to a non-TLS
         registry)
-      name: TLSVERIFY
       type: string
-    - default: ''
+    - name: MAVEN_ARGS_APPEND
+      default: ''
       description: Additional Maven arguments
-      name: MAVEN_ARGS_APPEND
       type: string
-    - default: 'false'
+    - name: MAVEN_CLEAR_REPO
+      default: 'false'
       description: Remove the Maven repository after the artifact is built
-      name: MAVEN_CLEAR_REPO
       type: string
-    - default: ''
+    - name: MAVEN_MIRROR_URL
+      default: ''
       description: The base URL of a mirror used for retrieving artifacts
-      name: MAVEN_MIRROR_URL
       type: string
-    - description: Location of the repo where image has to be pushed
-      name: IMAGE
+    - name: IMAGE
+      description: Location of the repo where image has to be pushed
       type: string
-    - default: >-
+    - name: CONTAINERFILE
+      default: src/container/Containerfile
+      description: Path to the Containerfile to build.
+      type: string
+    - name: BUILDER_IMAGE
+      default: >-
         registry.redhat.io/rhel8/buildah@sha256:00795fafdab9bbaa22cd29d1faa1a01e604e4884a2c935c1bf8e3d1f0ad1c084
       description: The location of the buildah builder image.
-      name: BUILDER_IMAGE
       type: string
-    - default: 'false'
+    - name: SKIP_PUSH
+      default: 'false'
       description: Skip pushing the built image
-      name: SKIP_PUSH
       type: string
-    - default: []
+    - name: ENV_VARS
+      default: []
       description: Environment variables to set during _build-time_.
-      name: ENV_VARS
       type: array
   results:
     - description: Digest of the image just built.
@@ -71,6 +75,8 @@ spec:
       name: generate
       script: >
         echo "MAVEN_CLEAR_REPO=$(params.MAVEN_CLEAR_REPO)" > /env-vars/env-file
+        
+        echo "MAVEN_LOCAL_REPO=$(workspaces.maven-local-repo.path)" >> /env-vars/env-file
 
         [[ '$(params.MAVEN_ARGS_APPEND)' != "" ]] &&
           echo "MAVEN_ARGS_APPEND=$(params.MAVEN_ARGS_APPEND)" >> /env-vars/env-file
@@ -94,6 +100,8 @@ spec:
 
         --as-dockerfile /gen-source/Dockerfile.gen --environment-file
         /env-vars/env-file
+
+        cat /env-vars/env-file
       volumeMounts:
         - mountPath: /gen-source
           name: gen-source
@@ -115,6 +123,10 @@ spec:
               key: "password"
       script: >
         echo "$QUAY_IO_PASSWORD" | buildah login --username "$QUAY_IO_USERNAME" --password-stdin quay.io
+
+        echo "Container file: $(params.CONTAINERFILE)"
+
+        cat /gen-source/Dockerfile.gen
 
         buildah bud --storage-driver=vfs --tls-verify=$(params.TLSVERIFY) \
            --layers -f /gen-source/Dockerfile.gen -t $(params.IMAGE) .
@@ -148,11 +160,12 @@ spec:
     - emptyDir: {}
       name: env-vars
   workspaces:
-    - mountPath: /workspace/source
-      name: source
+    - name: source
     - description: >-
         An optional workspace that allows providing a .docker/config.json file
         for Buildah to access the container registry. The file should be placed
         at the root of the Workspace with name config.json.
       name: dockerconfig
       optional: true
+    - name: maven-local-repo
+      mountPath: /tmp/maven-repo
