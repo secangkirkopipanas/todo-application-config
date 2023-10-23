@@ -71,7 +71,7 @@ spec:
         - name: HOME
           value: /tekton/home
       image: >-
-        registry.redhat.io/ocp-tools-4-tech-preview/source-to-image-rhel8@sha256:98d8cb3a255641ca6a1bce854e5e2460c20de9fb9b28e3cc67eb459f122873dd
+        registry.redhat.io/ocp-tools-43-tech-preview/source-to-image-rhel8@sha256:e01c89619a7c6a26d1f2d98acb9f8356a1f70dcd352ce450a4e80ea5d7489439
       name: generate
       script: >
         echo "MAVEN_CLEAR_REPO=$(params.MAVEN_CLEAR_REPO)" > /env-vars/env-file
@@ -125,8 +125,6 @@ spec:
         echo "$QUAY_IO_PASSWORD" | buildah login --username "$QUAY_IO_USERNAME" --password-stdin quay.io
 
         echo "Container file: $(params.CONTAINERFILE)"
-
-        cat /gen-source/Dockerfile.gen
 
         buildah bud --storage-driver=vfs --tls-verify=$(params.TLSVERIFY) \
            --layers -f /gen-source/Dockerfile.gen -t $(params.IMAGE) .
