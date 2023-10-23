@@ -1,0 +1,14 @@
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: todo-pipeline
+  namespace: todo-app
+spec:
+  pipelineRef:
+    name: todo-pipeline
+  workspaces:
+    - name: shared-workspace
+      emptyDir: {}
+    - name: container-registry-secret
+      emptyDir: {}

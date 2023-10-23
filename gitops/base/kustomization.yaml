@@ -1,0 +1,5 @@
+resources:
+- dep-todo.yaml
+- svc-todo.yaml
+- rt-todo.yaml
+- sa-todo-app.yaml

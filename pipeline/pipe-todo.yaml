@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: todo-pipeline
+  namespace: todo-app
+spec:
+  params:
+    - name: git-repo
+      type: string
+      default: "https://github.com/secangkirkopipanas/todo-application.git"
+      description: "Git repository"
+    - name: version
+      type: string
+      default: "0.0.1-SNAPSHOT"
+      description: "Application version"
+  workspaces:
+    - name: shared-workspace
+      description: | 
+        This workspace contains source code, so they can be read by the next task.
+    - name: container-registry-secret
+      description: "Container registry secret"
+  tasks:
+    - name: source-to-image
+      taskRef:
+        name: s2i-java
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: APP_NAME
+          value: todo
+        - name: GIT_REPO
+          value: $(params.git-repo)
+        - name: GIT_REVISION
+          value: develop
+        - name: IMAGE
+          value: registry.access.redhat.com/ubi8/openjdk-17-runtime:1.17-2
+        - name: IMAGE_NAME
+          value: quay.io/rh_rh/todo:0.0.1-SNAPSHOT
+        - name: TLSVERIFY
+          value: "false"
+        - name: VERSION
+          value: 0.0.1-SNAPSHOT
