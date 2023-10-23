@@ -34,10 +34,10 @@ spec:
         - name: GIT_REVISION
           value: develop
         - name: IMAGE
-          value: registry.access.redhat.com/ubi8/openjdk-17-runtime:1.17-2
-        - name: IMAGE_NAME
-          value: quay.io/rh_rh/todo:0.0.1-SNAPSHOT
+          value: quay.io/rh_rh/todo:$(params.version)
         - name: TLSVERIFY
           value: "false"
         - name: VERSION
-          value: 0.0.1-SNAPSHOT
+          value: latest
+        - name: MAVEN_ARGS_APPEND
+          value: -Xms1G -Xmx1G
