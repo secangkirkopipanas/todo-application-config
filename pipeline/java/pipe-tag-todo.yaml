@@ -2,37 +2,40 @@ apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: todo-tag-pipeline
-  namespace: todo-app
 spec:
   params:
-    - name: CONFIG_GIT_REPO
+    - name: INFRA_GIT_REPO
       type: string
-      default: "https://github.com/secangkirkopipanas/todo-application-config.git"
-      description: "Git repository of configuration repo"
-    - name: CONFIG_GIT_REF
+      default: "https://github.com/secangkirkopipanas/todo-application-infra.git"
+      description: "Git repository of infra code repo"
+    - name: INFRA_GIT_REF
       type: string
       default: develop
-      description: "Git ref of configuration repo"
+      description: "Git ref of infra code repo"
   workspaces:
     - name: shared-workspace
       description: | 
         This workspace contains source code, so they can be read by the next task.
   tasks:
-    - name: manifest-tag
+    - name: update-manifest
       taskRef:
-        name: manifest-tag
+        name: update-manifest
       params:
         - name: insecure-skip-tls-verify
           value: "true"
         - name: gitRepositoryUrl
-          value: $(params.CONFIG_GIT_REPO)
+          value: $(params.INFRA_GIT_REPO)
         - name: gitRepositoryRevision
-          value: $(params.CONFIG_GIT_REF)
-    - name: deployment-check
+          value: $(params.INFRA_GIT_REF)
+        - name: pushToRevision
+          value: "$(params.INFRA_GIT_REF)"
+        - name: imageTagName
+          value: "$(params.APP_VERSION)"
+    - name: acs-deployment-check
       taskRef:
         name: acs-deployment-check
       runAfter:
-        - manifest-tag
+        - update-manifest
       params:
         - name: rox_api_token
           value: stackrox
@@ -41,6 +44,6 @@ spec:
         - name: insecure-skip-tls-verify
           value: "true"
         - name: gitRepositoryUrl
-          value: $(params.CONFIG_GIT_REPO)
+          value: $(params.INFRA_GIT_REPO)
         - name: gitRepositoryRevision
-          value: $(params.CONFIG_GIT_REF)
+          value: $(params.INFRA_GIT_REF)

@@ -9,4 +9,4 @@ patches:
   patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/image
-      value: image-registry.openshift-image-registry.svc:5000/todo-java
+      value: quay.io/rh_rh/todo-application:0.0.1

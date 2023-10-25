@@ -3,7 +3,6 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: todo-pipeline-run
-  namespace: todo-app
 spec:
   pipelineRef:
     name: todo-pipeline
@@ -11,6 +10,10 @@ spec:
     - name: SOURCE_CODE_GIT_REPO
       value: "https://github.com/secangkirkopipanas/todo-application.git"
     - name: SOURCE_CODE_GIT_REF
+      value: develop
+    - name: INFRA_GIT_REPO
+      value: "https://github.com/secangkirkopipanas/todo-application-infra.git"
+    - name: INFRA_GIT_REF
       value: develop
     - name: APP_VERSION
       value: "0.0.1-SNAPSHOT"

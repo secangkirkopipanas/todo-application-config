@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: acs-image-scan
-  namespace: todo-app
 spec:
   description: Policy check an image with StackRox/RHACS This tasks allows you to
     check an image against build-time policies and apply enforcement to fail builds.
@@ -47,6 +46,11 @@ spec:
     script: |
       #!/usr/bin/env bash
       set +x
+
+      printf -- "-------------------------------------------\n"
+      printf    " Container Image Scan with Stackrox        \n"
+      printf -- "-------------------------------------------\n\n"
+
       curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
         "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
         --output ./roxctl  \

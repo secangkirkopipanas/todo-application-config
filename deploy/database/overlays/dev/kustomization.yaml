@@ -9,4 +9,4 @@ patches:
   patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/image
-      value: quay.io/rh_rh/todo-application:0.0.1
+      value: bitnami/postgresql:15.4.0-debian-11-r54
