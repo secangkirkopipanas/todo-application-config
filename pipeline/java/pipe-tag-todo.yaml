@@ -18,9 +18,21 @@ spec:
       description: | 
         This workspace contains source code, so they can be read by the next task.
   tasks:
+    - name: manifest-tag
+      taskRef:
+        name: manifest-tag
+      params:
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: gitRepositoryUrl
+          value: $(params.CONFIG_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.CONFIG_GIT_REF)
     - name: deployment-check
       taskRef:
         name: acs-deployment-check
+      runAfter:
+        - manifest-tag
       params:
         - name: rox_api_token
           value: stackrox
