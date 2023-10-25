@@ -3,7 +3,6 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   name: todo-tag-pipeline-run
-  namespace: todo-app
 spec:
   pipelineRef:
     name: todo-tag-pipeline
