@@ -114,6 +114,3 @@ spec:
           value: "$(params.INFRA_GIT_REF)"
         - name: imageTagName
           value: "$(params.APP_VERSION)"
-      workspaces:
-        - name: source
-          workspace: shared-workspace
