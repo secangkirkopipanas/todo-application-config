@@ -46,11 +46,43 @@ spec:
           value: org.hibernate.dialect.H2Dialect
         image: quay.io/rh_rh/todo-application:latest
         imagePullPolicy: IfNotPresent
-        name: catalog
+        name: todo
         ports:
         - containerPort: 8080
           name: http
           protocol: TCP
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2048Mi
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            host: ''
+            path: /management/info
+            port: 8080
+            scheme: HTTP
+        readinessProbe:
+          failureThreshold: 5
+          successThreshold: 1
+          httpGet:
+            host: ''
+            path: /management/info
+            port: 8080
+            scheme: HTTP
+        startupProbe:
+          failureThreshold: 5
+          successThreshold: 1
+          httpGet:
+            host: ''
+            path: /management/info
+            port: 8080
+            scheme: HTTP
+        securityContext:
+          runAsNonRoot: true
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
