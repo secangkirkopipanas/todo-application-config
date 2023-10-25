@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: acs-deploy-check
+  name: acs-deployment-check
   namespace: todo-app
 spec:
   description: >-
@@ -40,7 +40,6 @@ spec:
   steps:
     - image: 'quay.io/redhat-gpte/alpine-git:latest'
       name: git-checkout
-      resources: {}
       script: |
         #!/usr/bin/env sh
 
@@ -60,13 +59,12 @@ spec:
       workingDir: /workspace
     - image: quay.io/wpernath/kustomize-ubi
       name: kustomize-build
-      resources: {}
       script: |
         #!/usr/bin/env sh
 
         set -eu -o pipefail
 
-        cd repository/gitops/application/globex/overlays/dev
+        cd repository/gitops/overlays/sit
 
         mkdir -p /workspace/repository/input
         mkdir -p /workspace/repository/output
@@ -78,7 +76,6 @@ spec:
       workingDir: /workspace
     - image: looztra/kubesplit
       name: kustomize-split
-      resources: {}
       script: >
         #!/usr/bin/env sh
 
@@ -102,14 +99,11 @@ spec:
             secretKeyRef:
               key: rox_central_endpoint
               name: $(params.rox_central_endpoint)
-      image: 'registry.access.redhat.com/ubi8:8.7-1026'
+      image: 'registry.access.redhat.com/ubi9:9.2'
       name: rox-deploy-scan
-      resources: {}
       script: |
         #!/usr/bin/env bash
-
         set +x
-
         cd /workspace/repository/output
 
         curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
@@ -117,14 +111,13 @@ spec:
           --output ./roxctl  \
           > /dev/null
 
-        chmod +x ./roxctl  > /dev/null
-
-        DEPLOYMENT_FILE=$(ls -1a | grep *deployment--globex-ui.yml)
+        chmod +x ./roxctl > /dev/null
+        DEPLOYMENT_FILE=$(ls -1a | grep deployment)
 
         ./roxctl deployment check \
-         $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
-         echo -n "--insecure-skip-tls-verify") \
-         -e "$ROX_CENTRAL_ENDPOINT" --file "$DEPLOYMENT_FILE"
+          $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
+          echo -n "--insecure-skip-tls-verify") \
+          -e "$ROX_CENTRAL_ENDPOINT" --file "$DEPLOYMENT_FILE"
       volumeMounts:
         - mountPath: /workspace/repository
           name: repository

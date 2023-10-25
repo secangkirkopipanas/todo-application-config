@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/instance: todo-app
     app.kubernetes.io/name: todo
-  name: todo
+  name: todo-rt
 spec:
   port:
     targetPort: http
@@ -15,6 +15,6 @@ spec:
     termination: edge
   to:
     kind: Service
-    name: catalog
+    name: todo-svc
     weight: 100
   wildcardPolicy: None

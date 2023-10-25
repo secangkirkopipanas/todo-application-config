@@ -1,0 +1,93 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: todo-pipeline
+  namespace: todo-app
+spec:
+  params:
+    - name: SOURCE_CODE_GIT_REPO
+      type: string
+      default: "https://github.com/secangkirkopipanas/todo-application.git"
+      description: "Git repository of source code"
+    - name: SOURCE_CODE_GIT_REF
+      type: string
+      default: develop
+      description: "Git ref of source code repo"
+    - name: APP_VERSION
+      type: string
+      default: "0.0.1-SNAPSHOT"
+      description: "Application version"
+  workspaces:
+    - name: shared-workspace
+      description: | 
+        This workspace contains source code, so they can be read by the next task.
+    - name: maven-local-repo
+      description: | 
+        This workspace contains all Maven dependencies used by the application.
+  tasks:
+    - name: fetch-source
+      params:
+      - name: url
+        value: $(params.SOURCE_CODE_GIT_REPO)
+      - name: revision
+        value: $(params.SOURCE_CODE_GIT_REF)
+      - name: deleteExisting
+        value: "true"
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: shared-workspace
+    - name: build-maven
+      taskRef:
+        name: maven-openjdk17
+      runAfter:
+        - fetch-source
+      params:
+        - name: OPENJDK_IMAGE
+          value: registry.access.redhat.com/ubi9/openjdk-17:1.16
+        - name: GOALS
+          value: "clean package"
+        - name: SKIP_TESTS
+          value: "true"          
+        - name: MAVEN_OPTS
+          value: ""
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: maven-local-repo
+          workspace: maven-local-repo
+    - name: build-image-and-push
+      taskRef:
+        name: s2i-java
+      runAfter:
+        - build-maven
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: maven-local-repo
+          workspace: maven-local-repo
+      params:
+        - name: APP_NAME
+          value: todo
+        - name: IMAGE
+          value: quay.io/rh_rh/todo:$(params.APP_VERSION)
+        - name: TLSVERIFY
+          value: "false"
+        - name: VERSION
+          value: latest
+    - name: image-scan
+      taskRef:
+        name: acs-image-scan
+      runAfter:
+        - build-image-and-push
+      params:
+        - name: rox_api_token
+          value: stackrox
+        - name: rox_central_endpoint
+          value: stackrox
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: image
+          value: quay.io/rh_rh/todo:$(params.APP_VERSION)

@@ -1,0 +1,52 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: manifest-tag
+  namespace: todo-app
+spec:
+  params:
+    - default: >-
+        https://dev-user:openshift@gitea.apps.cluster-5khxf.5khxf.sandbox2563.opentlc.com/dev-user/securing-software-supply-chain.git
+      name: gitRepositoryUrl
+      type: string
+    - default: main
+      name: gitRepositoryRevision
+      type: string
+    - default: 'true'
+      name: verbose
+      type: string
+    - default: 'false'
+      description: |
+        When set to `"true"`, skip verifying the TLS certs of the Central
+        endpoint.  Defaults to `"false"`.
+      name: insecure-skip-tls-verify
+      type: string
+  steps:
+  - image: 'quay.io/redhat-gpte/alpine-git:latest'
+    name: git-checkout
+    script: |
+      #!/bin/bash
+      set -eu -o pipefail
+
+      printf -- "-------------------------------------\n"
+      printf    " Application promotion (tagging)     \n"
+      printf -- "-------------------------------------\n\n"
+
+      if [[ "$(params.verbose)" == "true" ]] ; then
+        set -x
+        echo "**** Cloning $(params.gitRepositoryUrl) into $(pwd)/repository"
+      fi
+
+      git clone "$(params.gitRepositoryUrl)" $(pwd)/repository
+      cd $(pwd)/repository
+      git checkout "$(params.gitRepositoryRevision)"
+      
+      ls -al
+
+    volumeMounts:
+      - mountPath: /workspace/repository
+        name: repository
+    workingDir: /workspace
+  volumes:
+    - emptyDir: {}
+      name: repository

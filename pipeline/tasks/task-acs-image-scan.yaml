@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: acs-image-check
+  name: acs-image-scan
   namespace: todo-app
 spec:
   description: Policy check an image with StackRox/RHACS This tasks allows you to
@@ -42,8 +42,8 @@ spec:
         secretKeyRef:
           key: rox_central_endpoint
           name: $(params.rox_central_endpoint)
-    image: registry.access.redhat.com/ubi8/ubi-minimal
-    name: rox-image-check
+    image: registry.access.redhat.com/ubi9/ubi-minimal
+    name: rox-image-scan
     script: |
       #!/usr/bin/env bash
       set +x
@@ -52,7 +52,7 @@ spec:
         --output ./roxctl  \
         > /dev/null
       chmod +x ./roxctl  > /dev/null
-      ./roxctl image check \
+      ./roxctl image scan \
         $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
         echo -n "--insecure-skip-tls-verify") \
         -e "$ROX_CENTRAL_ENDPOINT" --image "$(params.image)"

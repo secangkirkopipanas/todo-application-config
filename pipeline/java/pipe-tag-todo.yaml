@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: todo-tag-pipeline
+  namespace: todo-app
+spec:
+  params:
+    - name: CONFIG_GIT_REPO
+      type: string
+      default: "https://github.com/secangkirkopipanas/todo-application-config.git"
+      description: "Git repository of configuration repo"
+    - name: CONFIG_GIT_REF
+      type: string
+      default: develop
+      description: "Git ref of configuration repo"
+  workspaces:
+    - name: shared-workspace
+      description: | 
+        This workspace contains source code, so they can be read by the next task.
+  tasks:
+    - name: manifest-tag
+      taskRef:
+        name: manifest-tag
+      params:
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: gitRepositoryUrl
+          value: $(params.CONFIG_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.CONFIG_GIT_REF)
+    - name: deployment-check
+      taskRef:
+        name: acs-deployment-check
+      runAfter:
+        - manifest-tag
+      params:
+        - name: rox_api_token
+          value: stackrox
+        - name: rox_central_endpoint
+          value: stackrox
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: gitRepositoryUrl
+          value: $(params.CONFIG_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.CONFIG_GIT_REF)
