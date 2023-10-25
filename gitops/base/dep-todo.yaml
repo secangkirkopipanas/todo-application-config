@@ -21,42 +21,29 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: catalog
+        app.kubernetes.io/name: todo
         app.kubernetes.io/part-of: todo-app
     spec:
       containers:
       - env:
-        - name: POSTGRESQL_USER
-          valueFrom:
-            secretKeyRef:
-              key: database-user
-              name: catalog-database
-        - name: POSTGRESQL_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: database-password
-              name: catalog-database
-        - name: POSTGRESQL_DATABASE
-          valueFrom:
-            secretKeyRef:
-              key: database-name
-              name: catalog-database
         - name: JAVA_OPTIONS
-          value: -Dspring.profiles.active=openshift
-        - name: SPRING_DATASOURCE_URL
-          value: jdbc:postgresql://catalog-database:5432/${POSTGRESQL_DATABASE}
-        - name: SPRING_DATASOURCE_USERNAME
+          value: "-Xms1G -Xms1G"
+        - name: SPRING_ACTIVE_PROFILES
+          value: dev
+        - name: DATASOURCE_URL
+          value: jdbc:h2:mem:todo
+        - name: DATASOURCE_USERNAME
           valueFrom:
             secretKeyRef:
               key: database-user
-              name: catalog-database
-        - name: SPRING_DATASOURCE_PASSWORD
+              name: todo-database
+        - name: DATASOURCE_PASSWORD
           valueFrom:
             secretKeyRef:
               key: database-password
-              name: catalog-database
-        - name: INVENTORY_URL
-          value: inventory:8080
+              name: todo-database
+        - name: DATASOURCE_DRIVER_CLASSNAME
+          value: org.hibernate.dialect.H2Dialect
         image: quay.io/rh_rh/todo-application:latest
         imagePullPolicy: IfNotPresent
         name: catalog
