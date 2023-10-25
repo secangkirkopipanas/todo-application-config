@@ -77,7 +77,7 @@ spec:
           value: "false"
         - name: VERSION
           value: latest
-    - name: image-scan
+    - name: acs-image-scan
       taskRef:
         name: acs-image-scan
       runAfter:

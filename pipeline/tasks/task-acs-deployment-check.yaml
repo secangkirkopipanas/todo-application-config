@@ -64,7 +64,7 @@ spec:
 
         set -eu -o pipefail
 
-        cd repository/gitops/overlays/sit
+        cd repository/deploy/app-java/overlays/sit
 
         mkdir -p /workspace/repository/input
         mkdir -p /workspace/repository/output

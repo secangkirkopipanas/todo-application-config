@@ -9,7 +9,7 @@ spec:
     name: todo-tag-pipeline
   params:
     - name: CONFIG_GIT_REPO
-      value: "https://github.com/secangkirkopipanas/todo-application-config.git"
+      value: "https://github.com/secangkirkopipanas/todo-application-infra.git"
     - name: CONFIG_GIT_REF
       value: develop
   workspaces:

@@ -7,7 +7,7 @@ spec:
   params:
     - name: CONFIG_GIT_REPO
       type: string
-      default: "https://github.com/secangkirkopipanas/todo-application-config.git"
+      default: "https://github.com/secangkirkopipanas/todo-application-infra.git"
       description: "Git repository of configuration repo"
     - name: CONFIG_GIT_REF
       type: string
@@ -18,9 +18,9 @@ spec:
       description: | 
         This workspace contains source code, so they can be read by the next task.
   tasks:
-    - name: manifest-tag
+    - name: tag-manifest
       taskRef:
-        name: manifest-tag
+        name: tag-manifest
       params:
         - name: insecure-skip-tls-verify
           value: "true"
@@ -28,11 +28,11 @@ spec:
           value: $(params.CONFIG_GIT_REPO)
         - name: gitRepositoryRevision
           value: $(params.CONFIG_GIT_REF)
-    - name: deployment-check
+    - name: acs-deployment-check
       taskRef:
         name: acs-deployment-check
       runAfter:
-        - manifest-tag
+        - tag-manifest
       params:
         - name: rox_api_token
           value: stackrox

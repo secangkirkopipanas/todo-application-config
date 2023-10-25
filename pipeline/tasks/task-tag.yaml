@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: manifest-tag
+  name: tag-manifest
   namespace: todo-app
 spec:
   params:
@@ -25,8 +25,7 @@ spec:
   - image: 'quay.io/redhat-gpte/alpine-git:latest'
     name: git-checkout
     script: |
-      #!/bin/bash
-      set -eu -o pipefail
+      #!/usr/bin/env sh
 
       printf -- "-------------------------------------\n"
       printf    " Application promotion (tagging)     \n"
