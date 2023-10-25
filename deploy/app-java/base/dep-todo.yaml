@@ -26,6 +26,8 @@ spec:
     spec:
       containers:
         - env:
+            - name: TZ
+              value: Asia/Singapore
             - name: JAVA_OPTIONS
               value: "-Xms1G -Xms1G"
             - name: SPRING_ACTIVE_PROFILES
