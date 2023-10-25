@@ -64,7 +64,7 @@ spec:
 
         set -eu -o pipefail
 
-        cd gitops/overlays/sit
+        cd repository/gitops/overlays/sit
 
         mkdir -p /workspace/repository/input
         mkdir -p /workspace/repository/output
@@ -118,9 +118,9 @@ spec:
         DEPLOYMENT_FILE=$(ls -1a | grep *dep-todo.yaml)
 
         ./roxctl deployment check \
-         $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
-         echo -n "--insecure-skip-tls-verify") \
-         -e "$ROX_CENTRAL_ENDPOINT" --file "$DEPLOYMENT_FILE"
+          $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
+          echo -n "--insecure-skip-tls-verify") \
+          -e "$ROX_CENTRAL_ENDPOINT" --file "$DEPLOYMENT_FILE"
       volumeMounts:
         - mountPath: /workspace/repository
           name: repository

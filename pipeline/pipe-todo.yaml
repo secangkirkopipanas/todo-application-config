@@ -13,14 +13,6 @@ spec:
       type: string
       default: develop
       description: "Git ref of source code repo"
-    - name: CONFIG_GIT_REPO
-      type: string
-      default: "https://github.com/secangkirkopipanas/todo-application-config.git"
-      description: "Git repository of configuration repo"
-    - name: CONFIG_GIT_REF
-      type: string
-      default: develop
-      description: "Git ref of configuration repo"
     - name: APP_VERSION
       type: string
       default: "0.0.1-SNAPSHOT"
@@ -99,19 +91,3 @@ spec:
           value: "true"
         - name: image
           value: quay.io/rh_rh/todo:$(params.APP_VERSION)
-    - name: deployment-check
-      taskRef:
-        name: acs-deployment-check
-      runAfter:
-        - image-scan
-      params:
-        - name: rox_api_token
-          value: stackrox
-        - name: rox_central_endpoint
-          value: stackrox
-        - name: insecure-skip-tls-verify
-          value: "true"
-        - name: gitRepositoryUrl
-          value: $(params.CONFIG_GIT_REPO)
-        - name: gitRepositoryRevision
-          value: $(params.CONFIG_GIT_REF)
