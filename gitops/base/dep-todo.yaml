@@ -22,7 +22,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: catalog
-        app.kubernetes.io/part-of: globex-app
+        app.kubernetes.io/part-of: todo-app
     spec:
       containers:
       - env:
@@ -57,7 +57,7 @@ spec:
               name: catalog-database
         - name: INVENTORY_URL
           value: inventory:8080
-        image: quay.io/redhat-gpte/globex-catalog:app-mod-workshop
+        image: quay.io/rh_rh/todo-application:latest
         imagePullPolicy: IfNotPresent
         name: catalog
         ports:
