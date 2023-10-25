@@ -25,64 +25,64 @@ spec:
         app.kubernetes.io/part-of: todo-app
     spec:
       containers:
-      - env:
-        - name: JAVA_OPTIONS
-          value: "-Xms1G -Xms1G"
-        - name: SPRING_ACTIVE_PROFILES
-          value: dev
-        - name: DATASOURCE_URL
-          value: jdbc:h2:mem:todo
-        - name: DATASOURCE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              key: database-user
-              name: todo-database
-        - name: DATASOURCE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: database-password
-              name: todo-database
-        - name: DATASOURCE_DRIVER_CLASSNAME
-          value: org.hibernate.dialect.H2Dialect
-        image: quay.io/rh_rh/todo-application:latest
-        imagePullPolicy: IfNotPresent
-        name: todo
-        ports:
-        - containerPort: 8080
-          name: http
-          protocol: TCP
-        resources:
-          requests:
-            cpu: 200m
-            memory: 512Mi
-          limits:
-            cpu: 1000m
-            memory: 2048Mi
-        livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            host: ''
-            path: /management/info
-            port: 8080
-            scheme: HTTP
-        readinessProbe:
-          failureThreshold: 5
-          successThreshold: 1
-          httpGet:
-            host: ''
-            path: /management/info
-            port: 8080
-            scheme: HTTP
-        startupProbe:
-          failureThreshold: 5
-          successThreshold: 1
-          httpGet:
-            host: ''
-            path: /management/info
-            port: 8080
-            scheme: HTTP
-        securityContext:
-          runAsNonRoot: true
+        - env:
+            - name: JAVA_OPTIONS
+              value: "-Xms1G -Xms1G"
+            - name: SPRING_ACTIVE_PROFILES
+              value: dev
+            - name: DATASOURCE_URL
+              value: jdbc:h2:mem:todo
+            - name: DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: todo-database
+            - name: DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: todo-database
+            - name: DATASOURCE_DRIVER_CLASSNAME
+              value: org.hibernate.dialect.H2Dialect
+          image: quay.io/rh_rh/todo-application:0.0.1-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          name: todo
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              host: ''
+              path: /management/info
+              port: 8080
+              scheme: HTTP
+          readinessProbe:
+            failureThreshold: 5
+            successThreshold: 1
+            httpGet:
+              host: ''
+              path: /management/info
+              port: 8080
+              scheme: HTTP
+          startupProbe:
+            failureThreshold: 5
+            successThreshold: 1
+            httpGet:
+              host: ''
+              path: /management/info
+              port: 8080
+              scheme: HTTP
+          securityContext:
+            runAsNonRoot: true
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
