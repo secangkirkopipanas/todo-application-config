@@ -1,8 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: tag-manifest
-  namespace: todo-app
+  name: update-manifest
 spec:
   params:
     - default: >-
@@ -12,8 +11,13 @@ spec:
     - default: main
       name: gitRepositoryRevision
       type: string
+    - name: imageTagName
+      type: string
     - default: 'true'
       name: verbose
+      type: string
+    - default: ''
+      name: pushToRevision
       type: string
     - default: 'false'
       description: |
@@ -23,13 +27,13 @@ spec:
       type: string
   steps:
   - image: 'quay.io/redhat-gpte/alpine-git:latest'
-    name: git-checkout
+    name: update-manifest
     script: |
       #!/usr/bin/env sh
 
-      printf -- "-------------------------------------\n"
-      printf    " Application promotion (tagging)     \n"
-      printf -- "-------------------------------------\n\n"
+      printf -- "------------------------------\n"
+      printf    " Update Manifest and Push     \n"
+      printf -- "------------------------------\n\n"
 
       if [[ "$(params.verbose)" == "true" ]] ; then
         set -x
@@ -39,8 +43,19 @@ spec:
       git clone "$(params.gitRepositoryUrl)" $(pwd)/repository
       cd $(pwd)/repository
       git checkout "$(params.gitRepositoryRevision)"
+
+      curl -s -k -L \
+        "https://github.com/mikefarah/yq/releases/download/v4.35.2/yq_linux_amd64" \
+        --output ./yq
       
-      ls -al
+      ./yq e -i '.spec.template.spec.containers[0].image = "quay.io/rh_rh/todo-application:$(params.imageTagName)"' deploy/app-java/base/dep-todo.yaml
+      cat deploy/app-java/base/dep-todo.yaml
+
+      #if [[ ! -z "$(params.pushToRevision)" ]]; then
+      #  git add *
+      #  git commit -m "Updated manifest"
+      #  git push origin $(params.pushToRevision)
+      #fi
 
     volumeMounts:
       - mountPath: /workspace/repository
