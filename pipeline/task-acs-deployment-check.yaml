@@ -113,9 +113,13 @@ spec:
           --output ./roxctl  \
           > /dev/null
 
-        chmod +x ./roxctl  > /dev/null
+        chmod +x ./roxctl > /dev/null
+
+        ls -1a | grep *dep-todo.yaml
 
         DEPLOYMENT_FILE=$(ls -1a | grep *dep-todo.yaml)
+
+        echo "--- $DEPLOYMENT_FILE"
 
         ./roxctl deployment check \
           $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
