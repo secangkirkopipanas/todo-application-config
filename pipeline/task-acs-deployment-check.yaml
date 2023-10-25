@@ -112,9 +112,6 @@ spec:
           > /dev/null
 
         chmod +x ./roxctl > /dev/null
-
-        ls -1a | grep deployment
-
         DEPLOYMENT_FILE=$(ls -1a | grep deployment)
 
         ./roxctl deployment check \
