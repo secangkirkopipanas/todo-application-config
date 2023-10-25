@@ -49,8 +49,6 @@ spec:
       printf    " Update Manifest and Push     \n"
       printf -- "------------------------------\n\n"
 
-      # cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
-
       printf -- "-> Configuring Git environment... "
       git config --global user.email "$GITHUB_EMAIL"
       git config --global user.name "$GITHUB_USERNAME"
@@ -87,5 +85,3 @@ spec:
   volumes:
     - emptyDir: {}
       name: repository
-  workspaces:
-    - name: source

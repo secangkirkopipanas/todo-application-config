@@ -4,14 +4,14 @@ metadata:
   name: todo-tag-pipeline
 spec:
   params:
-    - name: CONFIG_GIT_REPO
+    - name: INFRA_GIT_REPO
       type: string
       default: "https://github.com/secangkirkopipanas/todo-application-infra.git"
-      description: "Git repository of configuration repo"
-    - name: CONFIG_GIT_REF
+      description: "Git repository of infra code repo"
+    - name: INFRA_GIT_REF
       type: string
       default: develop
-      description: "Git ref of configuration repo"
+      description: "Git ref of infra code repo"
   workspaces:
     - name: shared-workspace
       description: | 
@@ -24,9 +24,13 @@ spec:
         - name: insecure-skip-tls-verify
           value: "true"
         - name: gitRepositoryUrl
-          value: $(params.CONFIG_GIT_REPO)
+          value: $(params.INFRA_GIT_REPO)
         - name: gitRepositoryRevision
-          value: $(params.CONFIG_GIT_REF)
+          value: $(params.INFRA_GIT_REF)
+        - name: pushToRevision
+          value: "$(params.INFRA_GIT_REF)"
+        - name: imageTagName
+          value: "$(params.APP_VERSION)"
     - name: acs-deployment-check
       taskRef:
         name: acs-deployment-check
@@ -40,6 +44,6 @@ spec:
         - name: insecure-skip-tls-verify
           value: "true"
         - name: gitRepositoryUrl
-          value: $(params.CONFIG_GIT_REPO)
+          value: $(params.INFRA_GIT_REPO)
         - name: gitRepositoryRevision
-          value: $(params.CONFIG_GIT_REF)
+          value: $(params.INFRA_GIT_REF)

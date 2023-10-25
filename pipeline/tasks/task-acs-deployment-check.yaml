@@ -24,9 +24,6 @@ spec:
     - default: main
       name: gitRepositoryRevision
       type: string
-    - default: 'true'
-      name: verbose
-      type: string
     - default: 'false'
       description: |
         When set to `"true"`, skip verifying the TLS certs of the Central
@@ -41,17 +38,13 @@ spec:
       name: git-checkout
       script: |
         #!/usr/bin/env bash
+        set -x
 
         printf -- "-----------------------------------\n"
         printf    " Clone Infra Configuration         \n"
         printf -- "-----------------------------------\n\n"
 
         set -eu -o pipefail
-
-        if [[ "$(params.verbose)" == "true" ]] ; then
-          set -x
-          echo "**** Cloning $(params.gitRepositoryUrl) into $(pwd)/repository"
-        fi
 
         git clone "$(params.gitRepositoryUrl)" $(pwd)/repository
         cd repository
