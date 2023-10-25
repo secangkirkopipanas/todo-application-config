@@ -49,6 +49,8 @@ spec:
       printf    " Update Manifest and Push     \n"
       printf -- "------------------------------\n\n"
 
+      # cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
+
       printf -- "-> Configuring Git environment... "
       git config --global user.email "$GITHUB_EMAIL"
       git config --global user.name "$GITHUB_USERNAME"
@@ -68,13 +70,16 @@ spec:
       printf "Done!\n"
 
       if [ ! -z "$(params.pushToRevision)" ]; then
-        printf -- "-> Pushing manifest to Git repo... "
-        git add *
-        git commit --quiet -m "Updated manifest with tag name '$(params.imageTagName)'"
-        git push --quiet -f --set-upstream origin $(params.pushToRevision)
-        printf "Done!\n\n"
+        if [ -n "$(git status --porcelain)" ]; then
+          printf -- "-> Pushing manifest to Git repo... "
+          git add *
+          git commit --quiet -m "Updated manifest with tag name '$(params.imageTagName)'"
+          git push --quiet -f --set-upstream origin $(params.pushToRevision)
+          printf "Done!\n\n"
+        else
+          printf -- "-> No changes in the local Git repo!\n\n"
+        fi
       fi
-
     volumeMounts:
       - mountPath: /workspace/repository
         name: repository
@@ -82,3 +87,5 @@ spec:
   volumes:
     - emptyDir: {}
       name: repository
+  workspaces:
+    - name: source

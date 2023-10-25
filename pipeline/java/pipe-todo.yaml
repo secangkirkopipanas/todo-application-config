@@ -111,6 +111,9 @@ spec:
         - name: gitRepositoryRevision
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
-          value: develop
+          value: "$(params.INFRA_GIT_REF)"
         - name: imageTagName
-          value: "0.0.2"
+          value: "$(params.APP_VERSION)"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
