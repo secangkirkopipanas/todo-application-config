@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: s2i-java
-  namespace: todo-app
   labels:
     app.kubernetes.io/version: "0.1"
   annotations:
@@ -58,7 +57,9 @@ spec:
         registry.redhat.io/ocp-tools-43-tech-preview/source-to-image-rhel8@sha256:e01c89619a7c6a26d1f2d98acb9f8356a1f70dcd352ce450a4e80ea5d7489439
       name: generate
       script: |
-        #!/bin/bash
+        #!/usr/bin/env bash
+        set +x
+        
         printf -- "-------------------------------------------------\n"
         printf    " Processing Build Environment Variables          \n"
         printf -- "-------------------------------------------------\n\n"
@@ -87,7 +88,9 @@ spec:
               name: container-registry-secret
               key: "password"
       script: |
-        #!/bin/bash
+        #!/usr/bin/env bash
+        set +x
+
         printf -- "---------------------------------------------------\n"
         printf    " Building Container Image and Push to Registry     \n"
         printf -- "---------------------------------------------------\n\n"

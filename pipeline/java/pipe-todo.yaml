@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: todo-pipeline
-  namespace: todo-app
 spec:
   params:
     - name: SOURCE_CODE_GIT_REPO
@@ -13,6 +12,14 @@ spec:
       type: string
       default: develop
       description: "Git ref of source code repo"
+    - name: INFRA_GIT_REPO
+      type: string
+      default: "https://github.com/secangkirkopipanas/todo-application-infra.git"
+      description: "Git repository of infra code"
+    - name: INFRA_GIT_REF
+      type: string
+      default: develop
+      description: "Git ref of infra code repo"
     - name: APP_VERSION
       type: string
       default: "0.0.1-SNAPSHOT"
@@ -91,3 +98,19 @@ spec:
           value: "true"
         - name: image
           value: quay.io/rh_rh/todo:$(params.APP_VERSION)
+    - name: update-manifest-and-push
+      taskRef:
+        name: update-manifest
+      runAfter:
+        - acs-image-scan
+      params:
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: gitRepositoryUrl
+          value: $(params.INFRA_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: pushToRevision
+          value: develop
+        - name: imageTagName
+          value: "0.0.2"

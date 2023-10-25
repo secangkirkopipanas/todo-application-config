@@ -13,9 +13,6 @@ spec:
       type: string
     - name: imageTagName
       type: string
-    - default: 'true'
-      name: verbose
-      type: string
     - default: ''
       name: pushToRevision
       type: string
@@ -26,36 +23,57 @@ spec:
       name: insecure-skip-tls-verify
       type: string
   steps:
-  - image: 'quay.io/redhat-gpte/alpine-git:latest'
+  - image: 'quay.io/rh_rh/pipeline-utils:latest'
     name: update-manifest
+    env:
+        - name: GITHUB_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: github-credentials
+              key: "email"
+        - name: GITHUB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: github-credentials
+              key: "username"
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-credentials
+              key: "token"
     script: |
-      #!/usr/bin/env sh
+      #!/usr/bin/env bash
+      set +x
 
       printf -- "------------------------------\n"
       printf    " Update Manifest and Push     \n"
       printf -- "------------------------------\n\n"
 
-      if [[ "$(params.verbose)" == "true" ]] ; then
-        set -x
-        echo "**** Cloning $(params.gitRepositoryUrl) into $(pwd)/repository"
-      fi
+      printf -- "-> Configuring Git environment... "
+      git config --global user.email "$GITHUB_EMAIL"
+      git config --global user.name "$GITHUB_USERNAME"
+      printf "Done!\n"
 
-      git clone "$(params.gitRepositoryUrl)" $(pwd)/repository
+      printf -- "-> Fetching manifest from Git repo ($(params.gitRepositoryRevision))... "
+      NEW_GIT_URL="$(params.gitRepositoryUrl)"
+      NEW_GIT_URL=$(echo "${NEW_GIT_URL/https:\/\//https:\/\/$GITHUB_USERNAME:$GITHUB_TOKEN@}")
+      git clone --quiet "$NEW_GIT_URL" $(pwd)/repository
+      git config --global credential.helper store
       cd $(pwd)/repository
-      git checkout "$(params.gitRepositoryRevision)"
-
-      curl -s -k -L \
-        "https://github.com/mikefarah/yq/releases/download/v4.35.2/yq_linux_amd64" \
-        --output ./yq
+      git checkout --quiet "$(params.gitRepositoryRevision)"
+      printf "Done!\n"
       
-      ./yq e -i '.spec.template.spec.containers[0].image = "quay.io/rh_rh/todo-application:$(params.imageTagName)"' deploy/app-java/base/dep-todo.yaml
-      cat deploy/app-java/base/dep-todo.yaml
+      printf -- "-> Updating manifest to use 'quay.io/rh_rh/todo-application:$(params.imageTagName)' image... "
+      yq e -i '.spec.template.spec.containers[0].image = "quay.io/rh_rh/todo-application:$(params.imageTagName)"' deploy/app-java/base/dep-todo.yaml
+      printf "Done!\n"
 
-      #if [[ ! -z "$(params.pushToRevision)" ]]; then
-      #  git add *
-      #  git commit -m "Updated manifest"
-      #  git push origin $(params.pushToRevision)
-      #fi
+      if [ ! -z "$(params.pushToRevision)" ]; then
+        printf -- "-> Pushing manifest to Git repo... "
+        git add *
+        git commit --quiet -m "Updated manifest with tag name '$(params.imageTagName)'"
+        git push --quiet -f --set-upstream origin $(params.pushToRevision)
+        printf "Done!\n\n"
+      fi
 
     volumeMounts:
       - mountPath: /workspace/repository

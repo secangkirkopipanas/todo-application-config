@@ -23,7 +23,9 @@ spec:
   - name: build-maven
     image: $(params.OPENJDK_IMAGE)
     script: |
-      #!/bin/bash
+      #!/usr/bin/env bash
+      set +x
+      
       printf -- "-------------------------------------------------\n"
       printf    " Performing application build with Maven wrapper \n"
       printf -- "-------------------------------------------------\n\n"

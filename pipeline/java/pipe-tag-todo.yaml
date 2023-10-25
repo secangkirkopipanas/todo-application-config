@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: todo-tag-pipeline
-  namespace: todo-app
 spec:
   params:
     - name: CONFIG_GIT_REPO
@@ -18,9 +17,9 @@ spec:
       description: | 
         This workspace contains source code, so they can be read by the next task.
   tasks:
-    - name: tag-manifest
+    - name: update-manifest
       taskRef:
-        name: tag-manifest
+        name: update-manifest
       params:
         - name: insecure-skip-tls-verify
           value: "true"
@@ -32,7 +31,7 @@ spec:
       taskRef:
         name: acs-deployment-check
       runAfter:
-        - tag-manifest
+        - update-manifest
       params:
         - name: rox_api_token
           value: stackrox

@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: acs-deployment-check
-  namespace: todo-app
 spec:
   description: >-
     Policy check a deployment with StackRox/RHACS This tasks allows you to check
@@ -41,7 +40,11 @@ spec:
     - image: 'quay.io/redhat-gpte/alpine-git:latest'
       name: git-checkout
       script: |
-        #!/usr/bin/env sh
+        #!/usr/bin/env bash
+
+        printf -- "-----------------------------------\n"
+        printf    " Clone Infra Configuration         \n"
+        printf -- "-----------------------------------\n\n"
 
         set -eu -o pipefail
 
@@ -60,7 +63,12 @@ spec:
     - image: quay.io/wpernath/kustomize-ubi
       name: kustomize-build
       script: |
-        #!/usr/bin/env sh
+        #!/usr/bin/env bash
+        set +x
+
+        printf -- "--------------------------------------------\n"
+        printf    " Build Deployment File with Kustomize       \n"
+        printf -- "--------------------------------------------\n\n"
 
         set -eu -o pipefail
 
@@ -78,12 +86,15 @@ spec:
       name: kustomize-split
       script: >
         #!/usr/bin/env sh
+        set +x
 
+        printf -- "--------------------------------------------\n"
+        printf    " Build Deployment File with Kustomize       \n"
+        printf -- "--------------------------------------------\n\n"
 
         set -eu -o pipefail
 
-        kubesplit -i /workspace/repository/input/all.yaml -o
-        /workspace/repository/output
+        kubesplit -i /workspace/repository/input/all.yaml -o /workspace/repository/output
       volumeMounts:
         - mountPath: /workspace/repository
           name: repository
@@ -104,6 +115,11 @@ spec:
       script: |
         #!/usr/bin/env bash
         set +x
+
+        printf -- "--------------------------------------\n"
+        printf    " Deployment Check with Stackrox       \n"
+        printf -- "--------------------------------------\n\n"
+        
         cd /workspace/repository/output
 
         curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
