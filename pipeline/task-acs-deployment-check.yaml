@@ -103,9 +103,7 @@ spec:
       name: rox-deploy-scan
       script: |
         #!/usr/bin/env bash
-
         set +x
-
         cd /workspace/repository/output
 
         curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
@@ -115,11 +113,9 @@ spec:
 
         chmod +x ./roxctl > /dev/null
 
-        ls -1a | grep *dep-todo.yaml
+        ls -1a | grep deployment
 
-        DEPLOYMENT_FILE=$(ls -1a | grep *dep-todo.yaml)
-
-        echo "--- $DEPLOYMENT_FILE"
+        DEPLOYMENT_FILE=$(ls -1a | grep deployment)
 
         ./roxctl deployment check \
           $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
