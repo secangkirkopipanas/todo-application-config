@@ -73,7 +73,7 @@ spec:
         if [ -n "$(git status --porcelain)" ]; then
           printf -- "-> Pushing manifest to Git repo... "
           git add *
-          git commit --quiet -m "Updated manifest with tag name '$(params.imageTagName)'"
+          git commit --quiet -m "[PIPELINE] Updated manifest with tag name '$(params.imageTagName)'"
           git push --quiet -f --set-upstream origin $(params.pushToRevision)
           printf "Done!\n\n"
         else
