@@ -8,9 +8,13 @@ spec:
   pipelineRef:
     name: todo-pipeline
   params:
-    - name: GIT_REPO
+    - name: SOURCE_CODE_GIT_REPO
       value: "https://github.com/secangkirkopipanas/todo-application.git"
-    - name: GIT_REF
+    - name: SOURCE_CODE_GIT_REF
+      value: develop
+    - name: CONFIG_GIT_REPO
+      value: "https://github.com/secangkirkopipanas/todo-application-config.git"
+    - name: CONFIG_GIT_REF
       value: develop
     - name: APP_VERSION
       value: "0.0.1-SNAPSHOT"
