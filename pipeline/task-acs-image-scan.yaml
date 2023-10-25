@@ -42,7 +42,7 @@ spec:
         secretKeyRef:
           key: rox_central_endpoint
           name: $(params.rox_central_endpoint)
-    image: registry.access.redhat.com/ubi8/ubi-minimal
+    image: registry.access.redhat.com/ubi9/ubi-minimal
     name: rox-image-scan
     script: |
       #!/usr/bin/env bash
