@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: todo-db
+    app.kubernetes.io/name: todo-db
+    app.openshift.io/runtime: spring
+  name: todo-db
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: todo-db
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: todo-db
+        app.kubernetes.io/part-of: todo-app
+    spec:
+      containers:
+        - env:
+            - name: POSTGRESQL_DATABASE
+              value: tododb
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: database-credentials
+                  name: username
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-credentials
+                  name: password
+            - name: POSTGRESQL_TIMEZONE
+              value: Asia/Singapore
+            - name: POSTGRESQL_LOG_TIMEZONE
+              value: Asia/Singapore
+          image: bitnami/postgresql:15.4.0-debian-11-r54
+          imagePullPolicy: IfNotPresent
+          name: todo
+          ports:
+            - containerPort: 5432
+              name: psql-port
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+          securityContext:
+            runAsNonRoot: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
