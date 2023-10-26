@@ -64,6 +64,8 @@ spec:
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
           value: "$(params.INFRA_GIT_REF)"
+        - name: kustomizationFile
+          value: deploy/app-java/overlays/sit/kustomization.yaml
         - name: image
           value: "quay.io/rh_rh/todo"
         - name: imageTagName
@@ -82,8 +84,6 @@ spec:
           value: "true"
         - name: gitRepositoryUrl
           value: $(params.INFRA_GIT_REPO)
-        - name: kustomizationFile
-          value: deploy/app-java/overlays/sit/kustomization.yaml
         - name: gitRepositoryRevision
           value: $(params.INFRA_GIT_REF)
         - name: appGitRef
