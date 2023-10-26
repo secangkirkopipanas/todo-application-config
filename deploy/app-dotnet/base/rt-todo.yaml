@@ -2,7 +2,6 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: todo-dotnet-app
-  namespace: todo-app
   labels:
     app: todo-dotnet-app
     app.kubernetes.io/component: todo-dotnet-app

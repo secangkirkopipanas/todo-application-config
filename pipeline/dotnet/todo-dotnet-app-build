@@ -9,7 +9,6 @@ metadata:
     pipeline.openshift.io/runtime-version: 7.0-ubi8
     pipeline.openshift.io/type: kubernetes
   name: todo-dotnet-app
-  namespace: todo-app
 spec:
   params:
     - default: todo-dotnet-app
