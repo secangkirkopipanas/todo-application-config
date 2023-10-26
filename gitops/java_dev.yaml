@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: java-dev-applicationset
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: dev1
+        url: https://kubernetes.default.svc
+  template:
+    metadata:
+      name: '{{cluster}}-todo-application'
+    spec:
+      destination:
+        name: ''
+        namespace: dev
+        server: '{{url}}'
+      source:
+        path: deploy/app-java/overlays/dev
+        repoURL: https://github.com/secangkirkopipanas/todo-application-infra/
+        targetRevision: HEAD
+      sources: []
+      project: default
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: false
+        syncOptions:
+          - CreateNamespace=true
