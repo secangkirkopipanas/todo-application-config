@@ -3,10 +3,4 @@ kind: Kustomization
 bases:
 - ../../base
 patches:
-- target:
-    kind: Deployment
-    name: todo
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/0/image
-      value: image-registry.openshift-image-registry.svc:5000/todo-java
+- path: dep-todo-sit.yaml
