@@ -36,11 +36,11 @@ spec:
     - description: Output of `roxctl deployment check`
       name: check_output
   steps:
-    - image: 'quay.io/redhat-gpte/alpine-git:latest'
+    - image: 'quay.io/rh_rh/pipeline-utils:latest'
       name: git-checkout
       script: |
         #!/usr/bin/env bash
-        set -x
+        set +x
 
         printf -- "-----------------------------------\n"
         printf    " Clone Infra Configuration         \n"
@@ -58,7 +58,7 @@ spec:
     - image: quay.io/wpernath/kustomize-ubi
       name: kustomize-build
       script: |
-        #!/usr/bin/env bash
+        #!/usr/bin/env sh
         set +x
 
         printf -- "--------------------------------------------\n"
@@ -87,7 +87,6 @@ spec:
       name: kustomize-split
       script: >
         #!/usr/bin/env sh
-        set +x
 
         printf -- "--------------------------------------------\n"
         printf    " Split Deployment File with Kustomize       \n"
@@ -114,8 +113,7 @@ spec:
       image: 'registry.access.redhat.com/ubi9:9.2'
       name: rox-deploy-scan
       script: |
-        #!/usr/bin/env bash
-        set +x
+        #!/usr/bin/env sh
 
         printf -- "--------------------------------------\n"
         printf    " Deployment Check with Stackrox       \n"

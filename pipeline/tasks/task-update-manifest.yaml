@@ -56,13 +56,6 @@ spec:
       echo "Image name: $(params.image):$TAG_NAME"
 
       printf -- "-> Configuring environment... "
-      curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
-        "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
-        --output ./roxctl  \
-        > /dev/null
-
-      chmod +x ./roxctl > /dev/null
-
       git config --global user.email "$GITHUB_EMAIL"
       git config --global user.name "$GITHUB_USERNAME"
       printf "Done!\n"
@@ -79,14 +72,6 @@ spec:
       printf -- "-> Updating manifest to use '$(params.image):$TAG_NAME' image... "
       yq e -i '.spec.template.spec.containers[0].image = "$(params.image):$TAG_NAME"' deploy/app-java/base/dep-todo.yaml
       printf "Done!\n"
-        
-      cd /workspace/repository/output
-      DEPLOYMENT_FILE=$(ls -1a | grep deployment)
-
-      ./roxctl deployment check \
-        $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
-        echo -n "--insecure-skip-tls-verify") \
-        -e "$ROX_CENTRAL_ENDPOINT" --file "$DEPLOYMENT_FILE"
 
       if [ ! -z "$(params.pushToRevision)" ]; then
         if [ -n "$(git status --porcelain)" ]; then

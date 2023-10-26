@@ -12,6 +12,8 @@ spec:
     name: git-repo-name
   - description: The git repository URL.
     name: git-repo-url
+  - description: The git ref.
+    name: git-ref
   - description: The repository name for this PullRequest.
     name: pusher-name
   - description: The content type of the webhook.
@@ -28,7 +30,7 @@ spec:
         - name: SOURCE_CODE_GIT_REPO
           value: "$(tt.params.git-repo-url)"
         - name: SOURCE_CODE_GIT_REF
-          value: develop
+          value: "$(tt.params.git-ref)"
         - name: INFRA_GIT_REPO
           value: "https://github.com/secangkirkopipanas/todo-application-infra.git"
         - name: INFRA_GIT_REF
