@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pipeline-task
+spec:
+  destination:
+    name: ''
+    namespace: pipeline-task
+    server: https://kubernetes.default.svc
+  source:
+    path: pipeline/task
+    repoURL: https://github.com/secangkirkopipanas/todo-application-infra/
+    targetRevision: HEAD
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
