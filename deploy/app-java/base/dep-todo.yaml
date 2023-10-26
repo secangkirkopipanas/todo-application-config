@@ -46,7 +46,7 @@ spec:
                   name: todo-database
             - name: DATASOURCE_DRIVER_CLASSNAME
               value: org.hibernate.dialect.H2Dialect
-          image: quay.io/rh_rh/todo-application:d66a20c486d931828d1407dbc81517b66c600033
+          image: quay.io/rh_rh/todo-application:b128c06e2d652fdfe60ce959cbec61412a9ab498
           imagePullPolicy: IfNotPresent
           name: todo
           ports:
