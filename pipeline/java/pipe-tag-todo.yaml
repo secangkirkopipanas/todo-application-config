@@ -82,6 +82,8 @@ spec:
           value: "true"
         - name: gitRepositoryUrl
           value: $(params.INFRA_GIT_REPO)
+        - name: kustomizationFile
+          value: deploy/app-java/overlays/sit/kustomization.yaml
         - name: gitRepositoryRevision
           value: $(params.INFRA_GIT_REF)
         - name: appGitRef

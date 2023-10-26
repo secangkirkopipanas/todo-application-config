@@ -11,6 +11,8 @@ spec:
     - default: main
       name: gitRepositoryRevision
       type: string
+    - name: kustomizationFile
+      type: string
     - name: image
       type: string
     - name: imageTagName
@@ -60,7 +62,7 @@ spec:
       git config --global user.name "$GITHUB_USERNAME"
       printf "Done!\n"
 
-      printf -- "-> Fetching manifest from Git repo ($(params.gitRepositoryRevision))... "
+      printf -- "-> Fetching manifest from Git repo '($(params.gitRepositoryRevision))'... "
       NEW_GIT_URL="$(params.gitRepositoryUrl)"
       NEW_GIT_URL=$(echo "${NEW_GIT_URL/https:\/\//https:\/\/$GITHUB_USERNAME:$GITHUB_TOKEN@}")
       git clone --quiet "$NEW_GIT_URL" $(pwd)/repository
@@ -68,9 +70,9 @@ spec:
       cd $(pwd)/repository
       git checkout --quiet "$(params.gitRepositoryRevision)"
       printf "Done!\n"
-      
-      printf -- "-> Updating manifest to use '$(params.image):$TAG_NAME' image... "
-      yq e -i '.spec.template.spec.containers[0].image = "$(params.image):$TAG_NAME"' deploy/app-java/base/dep-todo.yaml
+
+      printf -- "-> Updating manifest '$(params.kustomizationFile)' to use '$(params.image):$TAG_NAME' image... "
+      yq e -i ".images[0].newTag = \"$TAG_NAME\"" $(params.kustomizationFile)
       printf "Done!\n"
 
       if [ ! -z "$(params.pushToRevision)" ]; then
