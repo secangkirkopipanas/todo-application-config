@@ -1,0 +1,32 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: todo-push-event-listener
+spec:
+  namespaceSelector: {}
+  resources:
+    kubernetesResource:
+      replicas: 1
+  serviceAccountName: user1
+  triggers:
+  - bindings:
+    - ref: github-push-binding
+    interceptors:
+    - params:
+      - name: secretRef
+        value:
+          secretKey: webhook-secret-key
+      ref:
+        name: github
+    - params:
+      - name: filter
+        value: (header.match('X-GitHub-Event', 'push'))
+      - name: overlays
+        value:
+        - expression: body.ref.split('/')[2]
+          key: ref
+      ref:
+        name: cel
+    name: build-from-push-globex-ui
+    template:
+      ref: app-globex-ui-template
