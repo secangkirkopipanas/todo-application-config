@@ -1,20 +1,24 @@
-apiVersion: route.openshift.io/v1
 kind: Route
+apiVersion: route.openshift.io/v1
 metadata:
-  annotations:
-    openshift.io/host.generated: "true"
+  name: todo-dotnet-app
+  namespace: todo-app
   labels:
-    app.kubernetes.io/instance: todo-app
-    app.kubernetes.io/name: todo
-  name: todo-rt
+    app: todo-dotnet-app
+    app.kubernetes.io/component: todo-dotnet-app
+    app.kubernetes.io/instance: todo-dotnet-app
+    app.kubernetes.io/name: todo-dotnet-app
+    app.kubernetes.io/part-of: todo-dotnet-app
+    app.openshift.io/runtime: dotnet
+    app.openshift.io/runtime-version: 7.0-ubi8
 spec:
-  port:
-    targetPort: http
-  tls:
-    insecureEdgeTerminationPolicy: Redirect
-    termination: edge
   to:
     kind: Service
-    name: todo-svc
+    name: todo-dotnet-app
     weight: 100
+  port:
+    targetPort: 8080-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
   wildcardPolicy: None
