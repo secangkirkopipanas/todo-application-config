@@ -75,8 +75,6 @@ spec:
         - name: maven-local-repo
           workspace: maven-local-repo
       params:
-        - name: APP_NAME
-          value: todo
         - name: IMAGE
           value: quay.io/rh_rh/todo
         - name: GIT_COMMIT_ID
