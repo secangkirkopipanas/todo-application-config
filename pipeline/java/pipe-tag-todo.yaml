@@ -12,6 +12,10 @@ spec:
       type: string
       default: develop
       description: "Git ref of infra code repo"
+    - name: APP_VERSION
+      type: string
+      default: "0.0.1-SNAPSHOT"
+      description: "Application version"
   workspaces:
     - name: shared-workspace
       description: | 
