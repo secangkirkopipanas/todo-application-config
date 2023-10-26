@@ -7,15 +7,17 @@ spec:
   resources:
     kubernetesResource:
       replicas: 1
-  serviceAccountName: user1
+  serviceAccountName: pipeline
   triggers:
   - bindings:
-    - ref: github-push-binding
+    - ref: github-push
+      kind: ClusterTriggerBinding
     interceptors:
     - params:
       - name: secretRef
         value:
-          secretKey: webhook-secret-key
+          secretName: github-credentials
+          secretKey: webhook-secret
       ref:
         name: github
     - params:
@@ -27,6 +29,6 @@ spec:
           key: ref
       ref:
         name: cel
-    name: build-from-push-globex-ui
+    name: build-from-push-todo
     template:
-      ref: app-globex-ui-template
+      ref: todo-trigger-template

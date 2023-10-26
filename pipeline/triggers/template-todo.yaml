@@ -4,44 +4,18 @@ metadata:
   name: todo-trigger-template
 spec:
   params:
-  - description: The git branch for this PR.
-    name: io.openshift.build.commit.ref
   - description: the specific commit SHA.
-    name: io.openshift.build.commit.id
-  - description: The date at which the commit was made
-    name: io.openshift.build.commit.date
-  - description: The name of the github user handle that made the commit
-    name: io.openshift.build.commit.author
+    name: git-revision
   - description: The commit message
-    name: io.openshift.build.commit.message
-  - description: The host name of the git repo
-    name: gitRepoHost
+    name: git-commit-message
+  - description: The  name of the git repo
+    name: git-repo-name
   - description: The git repository URL.
-    name: gitrepositoryurl
+    name: git-repo-url
   - description: The repository name for this PullRequest.
-    name: fullname
-  - description: The repository to push built images to.
-    name: imageRepoDev
-  - description: The repository to push built images to.
-    name: imageRepoProd
-  - description: The file to update to point to newly built image
-    name: manifestFile
-  - description: The file to update to point to newly built image in prod
-    name: manifestFileProd
-  - description: The repo to update to point to newly built image
-    name: manifestRepo
-  - description: The full name of the repo
-    name: manifestRepoName
-  - description: Enable image repository TLS certification verification.
-    name: tlsVerify
-  - description: Extra parameters passed for the push command when pushing images.
-    name: build_extra_args
-  - description: Target image repository name
-    name: imageRepo
-  - description: Sonarqube host url
-    name: sonarqubeHostUrl
-  - description: Cyclonedx host url
-    name: cyclonedxHostUrl
+    name: pusher-name
+  - description: The content type of the webhook.
+    name: content-type
   resourcetemplates:
   - apiVersion: tekton.dev/v1
     kind: PipelineRun
@@ -52,7 +26,7 @@ spec:
         name: todo-pipeline
       params:
         - name: SOURCE_CODE_GIT_REPO
-          value: "$(params.gitrepositoryurl)"
+          value: "$(tt.params.git-repo-url)"
         - name: SOURCE_CODE_GIT_REF
           value: develop
         - name: INFRA_GIT_REPO
