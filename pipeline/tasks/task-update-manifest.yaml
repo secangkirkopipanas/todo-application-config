@@ -75,7 +75,7 @@ spec:
           git push --quiet -f --set-upstream origin $(params.pushToRevision)
           printf "Done!\n\n"
         else
-          printf -- "-> No changes in the local Git repo!\n\n"
+          printf -- "-> No changes in the local infra repo!\n\n"
         fi
       fi
     volumeMounts:
