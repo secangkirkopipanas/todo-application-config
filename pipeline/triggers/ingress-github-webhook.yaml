@@ -9,7 +9,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /todo-pipeline-hooks
+          - path: /todo-pipeline-hook
             pathType: Exact
             backend:
               service:
