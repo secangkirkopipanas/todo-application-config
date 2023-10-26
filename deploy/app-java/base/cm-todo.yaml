@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-config 
+data:
+  timezone: "Asia/Singapore"
+  java_options: "-Xms1G -Xms1G"
+  spring_active_profiles: "dev"
+  datasource_url: "jdbc:h2:mem:todo"
+  datasource_driver_classname: "org.hibernate.dialect.H2Dialect"
