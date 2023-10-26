@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: todo-trigger-template
+  name: todo-tag-trigger-template
 spec:
   params:
   - description: the specific commit SHA.
@@ -12,8 +12,6 @@ spec:
     name: git-repo-name
   - description: The git repository URL.
     name: git-repo-url
-  - description: The git ref.
-    name: git-ref
   - description: The repository name for this PullRequest.
     name: pusher-name
   - description: The content type of the webhook.
@@ -22,15 +20,15 @@ spec:
   - apiVersion: tekton.dev/v1
     kind: PipelineRun
     metadata:
-      generateName: todo-pipeline-
+      generateName: todo-tag-pipeline-
     spec:
       pipelineRef:
-        name: todo-pipeline
+        name: todo-tag-pipeline
       params:
         - name: SOURCE_CODE_GIT_REPO
           value: "$(tt.params.git-repo-url)"
         - name: SOURCE_CODE_GIT_REF
-          value: "$(tt.params.git-ref)"
+          value: develop
         - name: INFRA_GIT_REPO
           value: "https://github.com/secangkirkopipanas/todo-application-infra.git"
         - name: INFRA_GIT_REF

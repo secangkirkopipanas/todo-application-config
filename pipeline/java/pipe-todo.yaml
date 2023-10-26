@@ -20,10 +20,9 @@ spec:
       type: string
       default: develop
       description: "Git ref of infra code repo"
-    - name: APP_VERSION
+    - name: GIT_COMMIT_ID
       type: string
-      default: "0.0.1-SNAPSHOT"
-      description: "Application version"
+      description: "Last Git commit ID"
   workspaces:
     - name: shared-workspace
       description: | 
@@ -79,7 +78,9 @@ spec:
         - name: APP_NAME
           value: todo
         - name: IMAGE
-          value: quay.io/rh_rh/todo:$(params.APP_VERSION)
+          value: quay.io/rh_rh/todo
+        - name: GIT_COMMIT_ID
+          value: $(params.GIT_COMMIT_ID)
         - name: TLSVERIFY
           value: "false"
         - name: VERSION
@@ -97,7 +98,9 @@ spec:
         - name: insecure-skip-tls-verify
           value: "true"
         - name: image
-          value: quay.io/rh_rh/todo:$(params.APP_VERSION)
+          value: quay.io/rh_rh/todo
+        - name: git_commit_id
+          value: $(params.GIT_COMMIT_ID)
     - name: update-manifest-and-push
       taskRef:
         name: update-manifest
@@ -112,5 +115,7 @@ spec:
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
           value: "$(params.INFRA_GIT_REF)"
+        - name: image
+          value: "quay.io/rh_rh/todo"
         - name: imageTagName
-          value: "$(params.APP_VERSION)"
+          value: "$(params.GIT_COMMIT_ID)"

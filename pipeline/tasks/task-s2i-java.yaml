@@ -30,6 +30,9 @@ spec:
     - name: IMAGE
       description: Location of the repo where image has to be pushed
       type: string
+    - name: GIT_COMMIT_ID
+      description: Git commit ID
+      type: string
     - name: BUILDER_IMAGE
       default: >-
         registry.redhat.io/rhel8/buildah@sha256:00795fafdab9bbaa22cd29d1faa1a01e604e4884a2c935c1bf8e3d1f0ad1c084
@@ -97,16 +100,20 @@ spec:
 
         echo "$QUAY_IO_PASSWORD" | buildah login --username "$QUAY_IO_USERNAME" --password-stdin quay.io
 
+        TAG_NAME="$(params.GIT_COMMIT_ID)"
+        TAG_NAME="${TAG_NAME:0:10}"
+        echo "Image name: $(params.IMAGE):$TAG_NAME"
+
         buildah bud --storage-driver=vfs --tls-verify=$(params.TLSVERIFY) \
-          --layers -f /gen-source/Dockerfile.gen -t $(params.IMAGE) .
+          --layers -f /gen-source/Dockerfile.gen -t $(params.IMAGE):$TAG_NAME .
 
         [[ "$(params.SKIP_PUSH)" == "true" ]] && echo "Push skipped" && exit 0
 
         [[ "$(workspaces.dockerconfig.bound)" == "true" ]] && export DOCKER_CONFIG="$(workspaces.dockerconfig.path)"
 
         buildah push --storage-driver=vfs --tls-verify=$(params.TLSVERIFY) \
-          --digestfile $(workspaces.source.path)/image-digest $(params.IMAGE) \
-          docker://$(params.IMAGE)
+          --digestfile $(workspaces.source.path)/image-digest $(params.IMAGE):$TAG_NAME \
+          docker://$(params.IMAGE):$TAG_NAME
 
         cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
       securityContext:

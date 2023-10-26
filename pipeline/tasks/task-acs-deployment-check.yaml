@@ -24,6 +24,8 @@ spec:
     - default: main
       name: gitRepositoryRevision
       type: string
+    - name: appGitRef
+      type: string
     - default: 'false'
       description: |
         When set to `"true"`, skip verifying the TLS certs of the Central
@@ -65,7 +67,13 @@ spec:
 
         set -eu -o pipefail
 
-        cd repository/deploy/app-java/overlays/sit
+        if [[ "$(params.appGitRef)" == "refs/heads/develop" ]]; then
+          ENV=dev
+        elif [[ "$(params.appGitRef)" =~ ^refs/tags/.* ]]; then
+          ENV=sit
+        fi
+
+        cd repository/deploy/app-java/overlays/$ENV
 
         mkdir -p /workspace/repository/input
         mkdir -p /workspace/repository/output
@@ -82,7 +90,7 @@ spec:
         set +x
 
         printf -- "--------------------------------------------\n"
-        printf    " Build Deployment File with Kustomize       \n"
+        printf    " Split Deployment File with Kustomize       \n"
         printf -- "--------------------------------------------\n\n"
 
         set -eu -o pipefail

@@ -11,7 +11,6 @@ spec:
   triggers:
   - bindings:
     - ref: github-push
-      kind: ClusterTriggerBinding
     interceptors:
     - params:
       - name: secretRef
@@ -22,7 +21,7 @@ spec:
         name: github
     - params:
       - name: filter
-        value: (header.match('X-GitHub-Event', 'push'))
+        value: (header.match('X-GitHub-Event', 'push') && !body.ref.startsWith('refs/tags'))
       - name: overlays
         value:
         - expression: body.ref.split('/')[2]
@@ -32,3 +31,25 @@ spec:
     name: build-from-push-todo
     template:
       ref: todo-trigger-template
+  - bindings:
+    - ref: github-push
+    interceptors:
+    - params:
+      - name: secretRef
+        value:
+          secretName: github-credentials
+          secretKey: webhook-secret
+      ref:
+        name: github
+    - params:
+      - name: filter
+        value: (header.match('X-GitHub-Event', 'push') && body.ref.startsWith('refs/tags'))
+      - name: overlays
+        value:
+        - expression: body.ref.split('/')[2]
+          key: ref
+      ref:
+        name: cel
+    name: build-from-tag-todo
+    template:
+      ref: todo-tag-trigger-template

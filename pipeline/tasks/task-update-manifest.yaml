@@ -11,6 +11,8 @@ spec:
     - default: main
       name: gitRepositoryRevision
       type: string
+    - name: image
+      type: string
     - name: imageTagName
       type: string
     - default: ''
@@ -49,7 +51,18 @@ spec:
       printf    " Update Manifest and Push     \n"
       printf -- "------------------------------\n\n"
 
-      printf -- "-> Configuring Git environment... "
+      TAG_NAME="$(params.imageTagName)"
+      TAG_NAME="${TAG_NAME:0:10}"
+      echo "Image name: $(params.image):$TAG_NAME"
+
+      printf -- "-> Configuring environment... "
+      curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
+        "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
+        --output ./roxctl  \
+        > /dev/null
+
+      chmod +x ./roxctl > /dev/null
+
       git config --global user.email "$GITHUB_EMAIL"
       git config --global user.name "$GITHUB_USERNAME"
       printf "Done!\n"
@@ -63,15 +76,23 @@ spec:
       git checkout --quiet "$(params.gitRepositoryRevision)"
       printf "Done!\n"
       
-      printf -- "-> Updating manifest to use 'quay.io/rh_rh/todo-application:$(params.imageTagName)' image... "
-      yq e -i '.spec.template.spec.containers[0].image = "quay.io/rh_rh/todo-application:$(params.imageTagName)"' deploy/app-java/base/dep-todo.yaml
+      printf -- "-> Updating manifest to use '$(params.image):$TAG_NAME' image... "
+      yq e -i '.spec.template.spec.containers[0].image = "$(params.image):$TAG_NAME"' deploy/app-java/base/dep-todo.yaml
       printf "Done!\n"
+        
+      cd /workspace/repository/output
+      DEPLOYMENT_FILE=$(ls -1a | grep deployment)
+
+      ./roxctl deployment check \
+        $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
+        echo -n "--insecure-skip-tls-verify") \
+        -e "$ROX_CENTRAL_ENDPOINT" --file "$DEPLOYMENT_FILE"
 
       if [ ! -z "$(params.pushToRevision)" ]; then
         if [ -n "$(git status --porcelain)" ]; then
           printf -- "-> Pushing manifest to Git repo... "
           git add *
-          git commit --quiet -m "[PIPELINE] Updated manifest with tag name '$(params.imageTagName)'"
+          git commit --quiet -m "[PIPELINE] Updated manifest with image name '$(params.image):$TAG_NAME'"
           git push --quiet -f --set-upstream origin $(params.pushToRevision)
           printf "Done!\n\n"
         else

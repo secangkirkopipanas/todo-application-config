@@ -4,6 +4,14 @@ metadata:
   name: todo-tag-pipeline
 spec:
   params:
+    - name: SOURCE_CODE_GIT_REPO
+      type: string
+      default: "https://github.com/secangkirkopipanas/todo-application.git"
+      description: "Git repository of source code"
+    - name: SOURCE_CODE_GIT_REF
+      type: string
+      default: develop
+      description: "Git ref of source code repo"
     - name: INFRA_GIT_REPO
       type: string
       default: "https://github.com/secangkirkopipanas/todo-application-infra.git"
@@ -12,10 +20,9 @@ spec:
       type: string
       default: develop
       description: "Git ref of infra code repo"
-    - name: APP_VERSION
+    - name: GIT_COMMIT_ID
       type: string
-      default: "0.0.1-SNAPSHOT"
-      description: "Application version"
+      description: "Last Git commit ID"
   workspaces:
     - name: shared-workspace
       description: | 
@@ -33,8 +40,10 @@ spec:
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
           value: "$(params.INFRA_GIT_REF)"
+        - name: image
+          value: "quay.io/rh_rh/todo"
         - name: imageTagName
-          value: "$(params.APP_VERSION)"
+          value: "$(params.GIT_COMMIT_ID)"
     - name: acs-deployment-check
       taskRef:
         name: acs-deployment-check
@@ -51,3 +60,5 @@ spec:
           value: $(params.INFRA_GIT_REPO)
         - name: gitRepositoryRevision
           value: $(params.INFRA_GIT_REF)
+        - name: appGitRef
+          value: $(params.SOURCE_CODE_GIT_REF)
