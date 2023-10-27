@@ -11,6 +11,6 @@ configMapGenerator:
     literals:
       - timezone="Asia/Singapore"
       - java_options="-Xms2G -Xms2G"
-      - spring_active_profiles="prod"
+      - spring_active_profiles="sit"
       - datasource_url="jdbc:h2:mem:todo"
       - datasource_driver_classname="org.hibernate.dialect.H2Dialect"
