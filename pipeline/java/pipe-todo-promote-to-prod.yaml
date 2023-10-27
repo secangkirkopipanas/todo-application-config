@@ -1,28 +1,28 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: todo-tag-pipeline
+  name: todo-java-promote-to-prod
 spec:
   params:
     - name: SOURCE_CODE_GIT_REPO
       type: string
       default: "https://github.com/secangkirkopipanas/todo-application.git"
       description: "Git repository of source code"
-    - name: SOURCE_CODE_GIT_REF
+    - name: TAG_NAME
       type: string
-      default: develop
-      description: "Git ref of source code repo"
+      description: "The promoted tag name"
     - name: INFRA_GIT_REPO
       type: string
       default: "https://github.com/secangkirkopipanas/todo-application-infra.git"
       description: "Git repository of infra code repo"
     - name: INFRA_GIT_REF
       type: string
-      default: develop
+      default: main
       description: "Git ref of infra code repo"
-    - name: GIT_COMMIT_ID
+    - name: IMAGE
       type: string
-      description: "Last Git commit ID"
+      default: quay.io/rh_rh/todo-java
+      description: "Image name for application"
   workspaces:
     - name: shared-workspace
       description: | 
@@ -34,30 +34,9 @@ spec:
       description: | 
         This workspace contains all infra manifests.
   tasks:
-    - name: retag-image
-      taskRef:
-        name: s2i-retag
-      params:
-        - name: IMAGE
-          value: quay.io/rh_rh/todo
-        - name: GIT_COMMIT_ID
-          value: $(params.GIT_COMMIT_ID)
-        - name: GIT_REF
-          value: $(params.SOURCE_CODE_GIT_REF)
-        - name: TLSVERIFY
-          value: "false"
-        - name: VERSION
-          value: latest
-      workspaces:
-        - name: source
-          workspace: shared-workspace
-        - name: maven-local-repo
-          workspace: maven-local-repo
     - name: update-manifest
       taskRef:
         name: update-manifest
-      runAfter:
-        - retag-image
       params:
         - name: insecure-skip-tls-verify
           value: "true"
@@ -68,11 +47,11 @@ spec:
         - name: pushToRevision
           value: ""
         - name: kustomizationFile
-          value: deploy/app-java/overlays/sit/kustomization.yaml
+          value: deploy/app-java/overlays/prod/kustomization.yaml
         - name: image
-          value: "quay.io/rh_rh/todo"
+          value: $(params.IMAGE)
         - name: imageTagName
-          value: "$(params.GIT_COMMIT_ID)"
+          value: "$(params.TAG_NAME)"
       workspaces:
         - name: source
           workspace: infra-repo
@@ -94,8 +73,6 @@ spec:
           value: $(params.INFRA_GIT_REF)``
         - name: skipPull
           value: "true"
-        - name: appGitRef
-          value: $(params.SOURCE_CODE_GIT_REF)
       workspaces:
         - name: source
           workspace: infra-repo
@@ -114,9 +91,9 @@ spec:
         - name: pushToRevision
           value: $(params.INFRA_GIT_REF)
         - name: image
-          value: "quay.io/rh_rh/todo"
+          value: $(params.IMAGE)
         - name: imageTagName
-          value: "$(params.GIT_COMMIT_ID)"
+          value: "$(params.TAG_NAME)"
       workspaces:
         - name: source
           workspace: infra-repo

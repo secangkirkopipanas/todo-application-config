@@ -56,7 +56,9 @@ spec:
       printf -- "------------------\n\n"
 
       TAG_NAME="$(params.imageTagName)"
-      TAG_NAME="${TAG_NAME:0:10}"
+      if [ ${#TAG_NAME} -gt 30 ]; then
+        TAG_NAME="${TAG_NAME:0:10}"
+      fi
       echo "Image name: $(params.image):$TAG_NAME"
 
       printf -- "-> Configuring environment... "

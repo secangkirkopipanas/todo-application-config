@@ -29,6 +29,7 @@ spec:
       type: string
     - name: appGitRef
       type: string
+      default: ''
     - default: 'false'
       description: |
         When set to `"true"`, skip verifying the TLS certs of the Central
@@ -71,10 +72,12 @@ spec:
 
         set -eu -o pipefail
 
-        if [[ "$(params.appGitRef)" == "refs/heads/develop" ]]; then
+        if [[ "$(params.appGitRef)" =~ "refs/heads/.*" ]]; then
           ENV=dev
         elif [[ "$(params.appGitRef)" =~ ^refs/tags/.* ]]; then
           ENV=sit
+        else
+          ENV=prod
         fi
 
         cd infra/deploy/app-java/overlays/$ENV

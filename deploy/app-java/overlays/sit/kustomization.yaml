@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
   - ../../base
 images:
-  - name: quay.io/rh_rh/todo
-    newName: quay.io/rh_rh/todo
-    newTag: "a7d0b835bc"
+  - name: quay.io/rh_rh/todo-java
+    newName: quay.io/rh_rh/todo-java
+    newTag: "53ecf3efd7"
 configMapGenerator:
   - name: todo-configmap
     literals:

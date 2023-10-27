@@ -1,0 +1,126 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: todo-java-promote-to-sit
+spec:
+  params:
+    - name: SOURCE_CODE_GIT_REPO
+      type: string
+      default: "https://github.com/secangkirkopipanas/todo-application.git"
+      description: "Git repository of source code"
+    - name: SOURCE_CODE_GIT_REF
+      type: string
+      default: develop
+      description: "Git ref of source code repo"
+    - name: INFRA_GIT_REPO
+      type: string
+      default: "https://github.com/secangkirkopipanas/todo-application-infra.git"
+      description: "Git repository of infra code repo"
+    - name: INFRA_GIT_REF
+      type: string
+      default: main
+      description: "Git ref of infra code repo"
+    - name: IMAGE
+      type: string
+      default: quay.io/rh_rh/todo-java
+      description: "Image name for application"
+    - name: GIT_COMMIT_ID
+      type: string
+      description: "Last Git commit ID"
+  workspaces:
+    - name: shared-workspace
+      description: | 
+        This workspace contains source code, so they can be read by the next task.
+    - name: maven-local-repo
+      description: | 
+        This workspace contains all Maven dependencies used by the application.
+    - name: infra-repo
+      description: | 
+        This workspace contains all infra manifests.
+  tasks:
+    - name: retag-image
+      taskRef:
+        name: s2i-retag
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE)
+        - name: GIT_COMMIT_ID
+          value: $(params.GIT_COMMIT_ID)
+        - name: GIT_REF
+          value: $(params.SOURCE_CODE_GIT_REF)
+        - name: TLSVERIFY
+          value: "false"
+        - name: VERSION
+          value: latest
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: maven-local-repo
+          workspace: maven-local-repo
+    - name: update-manifest
+      taskRef:
+        name: update-manifest
+      runAfter:
+        - retag-image
+      params:
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: gitRepositoryUrl
+          value: $(params.INFRA_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: pushToRevision
+          value: ""
+        - name: kustomizationFile
+          value: deploy/app-java/overlays/sit/kustomization.yaml
+        - name: image
+          value: $(params.IMAGE)
+        - name: imageTagName
+          value: "$(params.GIT_COMMIT_ID)"
+      workspaces:
+        - name: source
+          workspace: infra-repo
+    - name: acs-deployment-check
+      taskRef:
+        name: acs-deployment-check
+      runAfter:
+        - update-manifest
+      params:
+        - name: rox_api_token
+          value: stackrox
+        - name: rox_central_endpoint
+          value: stackrox
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: gitRepositoryUrl
+          value: $(params.INFRA_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.INFRA_GIT_REF)``
+        - name: skipPull
+          value: "true"
+        - name: appGitRef
+          value: $(params.SOURCE_CODE_GIT_REF)
+      workspaces:
+        - name: source
+          workspace: infra-repo
+    - name: push-manifest
+      taskRef:
+        name: push-manifest
+      runAfter:
+        - acs-deployment-check
+      params:
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: gitRepositoryUrl
+          value: $(params.INFRA_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: pushToRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: image
+          value: $(params.IMAGE)
+        - name: imageTagName
+          value: "$(params.GIT_COMMIT_ID)"
+      workspaces:
+        - name: source
+          workspace: infra-repo

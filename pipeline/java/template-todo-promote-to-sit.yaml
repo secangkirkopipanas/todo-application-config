@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: todo-trigger-template
+  name: todo-java-promote-to-sit-template
 spec:
   params:
   - description: the specific commit SHA.
@@ -22,10 +22,10 @@ spec:
   - apiVersion: tekton.dev/v1
     kind: PipelineRun
     metadata:
-      generateName: todo-pipeline-
+      generateName: todo-java-promote-to-sit-
     spec:
       pipelineRef:
-        name: todo-pipeline
+        name: todo-java-promote-to-sit
       params:
         - name: SOURCE_CODE_GIT_REPO
           value: "$(tt.params.git-repo-url)"
@@ -34,16 +34,16 @@ spec:
         - name: INFRA_GIT_REPO
           value: "https://github.com/secangkirkopipanas/todo-application-infra.git"
         - name: INFRA_GIT_REF
-          value: develop
+          value: main
         - name: GIT_COMMIT_ID
           value: "$(tt.params.git-revision)"
       workspaces:
         - name: shared-workspace
           persistentVolumeClaim:
-            claimName: todo-repo
+            claimName: todo-java-workspace
         - name: maven-local-repo
           persistentVolumeClaim:
             claimName: maven-local-repo
         - name: infra-repo
           persistentVolumeClaim:
-            claimName: todo-infra-repo
+            claimName: todo-java-infra-workspace
