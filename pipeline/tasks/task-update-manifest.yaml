@@ -20,6 +20,8 @@ spec:
     - default: ''
       name: pushToRevision
       type: string
+      description: |
+        When set to `""``, skip push to Git repository.
     - default: 'false'
       description: |
         When set to `"true"`, skip verifying the TLS certs of the Central
@@ -80,15 +82,17 @@ spec:
       yq e -i ".images[0].newTag = \"$TAG_NAME\"" $(params.kustomizationFile)
       printf "Done!\n"
 
-      if [ ! -z "$(params.pushToRevision)" ]; then
-        if [ -n "$(git status --porcelain)" ]; then
-          printf -- "-> Pushing manifest to Git repo... "
+      if [ -n "$(git status --porcelain)" ]; then
+        printf -- "-> Pushing manifest to Git repo... "
+        if [ ! -z "$(params.pushToRevision)" ]; then
           git add *
           git commit --quiet -m "[PIPELINE] Updated manifest with image name '$(params.image):$TAG_NAME'"
           git push --quiet -f --set-upstream origin $(params.pushToRevision)
           printf "Done!\n\n"
         else
-          printf -- "-> No changes in the local infra repo!\n\n"
+          printf "Skipped!\n\n"
         fi
+      else
+        printf -- "-> No changes in the local infra repo!\n\n"
       fi
     workingDir: $(workspaces.source.path)

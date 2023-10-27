@@ -66,7 +66,7 @@ spec:
         - name: gitRepositoryRevision
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
-          value: "$(params.INFRA_GIT_REF)"
+          value: ""
         - name: kustomizationFile
           value: deploy/app-java/overlays/sit/kustomization.yaml
         - name: image
@@ -96,6 +96,27 @@ spec:
           value: "true"
         - name: appGitRef
           value: $(params.SOURCE_CODE_GIT_REF)
+      workspaces:
+        - name: source
+          workspace: infra-repo
+    - name: push-manifest
+      taskRef:
+        name: push-manifest
+      runAfter:
+        - acs-deployment-check
+      params:
+        - name: insecure-skip-tls-verify
+          value: "true"
+        - name: gitRepositoryUrl
+          value: $(params.INFRA_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: pushToRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: image
+          value: "quay.io/rh_rh/todo"
+        - name: imageTagName
+          value: "$(params.GIT_COMMIT_ID)"
       workspaces:
         - name: source
           workspace: infra-repo
