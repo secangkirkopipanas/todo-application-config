@@ -29,27 +29,27 @@ spec:
             - name: TZ
               valueFrom:
                 configMapKeyRef:
-                  name: todo-config
+                  name: todo-configmap
                   key: timezone
             - name: JAVA_OPTIONS
               valueFrom:
                 configMapKeyRef:
-                  name: todo-config
+                  name: todo-configmap
                   key: java_options
             - name: SPRING_ACTIVE_PROFILES
               valueFrom:
                 configMapKeyRef:
-                  name: todo-config
+                  name: todo-configmap
                   key: spring_active_profiles
             - name: DATASOURCE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: todo-config
+                  name: todo-configmap
                   key: datasource_url
             - name: DATASOURCE_DRIVER_CLASSNAME
               valueFrom:
                 configMapKeyRef:
-                  name: todo-config
+                  name: todo-configmap
                   key: datasource_driver_classname
             - name: DATASOURCE_USERNAME
               valueFrom:
