@@ -9,4 +9,4 @@ spec:
       containers:
         - name: todo-dotnet-app
           image: >-
-            image-registry.openshift-image-registry.svc:5000/todo-app/todo-dotnet-app:latest
+            quay.io/rh_rh/todo-dotnet:abcdef
