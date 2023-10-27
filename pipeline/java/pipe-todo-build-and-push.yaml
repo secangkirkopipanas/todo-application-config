@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: todo-pipeline
+  name: todo-java-build-and-push
 spec:
   params:
     - name: SOURCE_CODE_GIT_REPO
@@ -18,8 +18,12 @@ spec:
       description: "Git repository of infra code"
     - name: INFRA_GIT_REF
       type: string
-      default: develop
+      default: main
       description: "Git ref of infra code repo"
+    - name: IMAGE
+      type: string
+      default: quay.io/rh_rh/todo-java
+      description: "Image name for application"
     - name: GIT_COMMIT_ID
       type: string
       description: "Last Git commit ID"
@@ -48,7 +52,7 @@ spec:
       workspaces:
       - name: output
         workspace: shared-workspace
-    - name: build-maven
+    - name: build
       taskRef:
         name: maven-openjdk17
       runAfter:
@@ -71,7 +75,7 @@ spec:
       taskRef:
         name: s2i-java
       runAfter:
-        - build-maven
+        - build
       workspaces:
         - name: source
           workspace: shared-workspace
@@ -79,7 +83,7 @@ spec:
           workspace: maven-local-repo
       params:
         - name: IMAGE
-          value: quay.io/rh_rh/todo
+          value: $(params.IMAGE)
         - name: GIT_COMMIT_ID
           value: $(params.GIT_COMMIT_ID)
         - name: TLSVERIFY
@@ -99,14 +103,31 @@ spec:
         - name: insecure-skip-tls-verify
           value: "true"
         - name: image
-          value: quay.io/rh_rh/todo
+          value: $(params.IMAGE)
         - name: git_commit_id
           value: $(params.GIT_COMMIT_ID)
+    - name: acs-image-check
+      params:
+        - name: rox_central_endpoint
+          value: stackrox
+        - name: rox_api_token
+          value: stackrox
+        - name: image
+          value: $(params.IMAGE)
+        - name: insecure-skip-tls-verify
+          value: 'true'
+        - name: git_commit_id
+          value: $(params.GIT_COMMIT_ID)
+      runAfter:
+        - acs-image-scan
+      taskRef:
+        kind: Task
+        name: acs-image-check
     - name: update-manifest-and-push
       taskRef:
         name: update-manifest
       runAfter:
-        - acs-image-scan
+        - acs-image-check
       params:
         - name: insecure-skip-tls-verify
           value: "true"
@@ -119,7 +140,7 @@ spec:
         - name: kustomizationFile
           value: deploy/app-java/overlays/dev/kustomization.yaml
         - name: image
-          value: "quay.io/rh_rh/todo"
+          value: $(params.IMAGE)
         - name: imageTagName
           value: "$(params.GIT_COMMIT_ID)"
       workspaces:

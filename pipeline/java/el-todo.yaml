@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: todo-push-event-listener
+  name: todo-java-event-listener
 spec:
   namespaceSelector: {}
   resources:
@@ -28,9 +28,9 @@ spec:
           key: ref
       ref:
         name: cel
-    name: build-from-push-todo
+    name: todo-java-build-and-push
     template:
-      ref: todo-trigger-template
+      ref: todo-java-build-and-push-template
   - bindings:
     - ref: github-push
     interceptors:
@@ -50,6 +50,24 @@ spec:
           key: ref
       ref:
         name: cel
-    name: build-from-tag-todo
+    name: todo-java-promote-to-sit
     template:
-      ref: todo-tag-trigger-template
+      ref: todo-java-promote-to-sit-template
+  - bindings:
+    - ref: github-release
+    interceptors:
+    - params:
+      - name: secretRef
+        value:
+          secretName: github-credentials
+          secretKey: webhook-secret
+      ref:
+        name: github
+    - params:
+      - name: filter
+        value: (header.match('X-GitHub-Event', 'release') && body.action == 'published')
+      ref:
+        name: cel
+    name: todo-java-promote-to-prod
+    template:
+      ref: todo-java-promote-to-prod-template

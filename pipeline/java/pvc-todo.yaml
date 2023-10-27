@@ -15,7 +15,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: todo-repo
+  name: todo-java-workspace
 spec:
   accessModes:
     - ReadWriteOnce
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: todo-infra-repo
+  name: todo-java-infra-workspace
 spec:
   accessModes:
     - ReadWriteOnce

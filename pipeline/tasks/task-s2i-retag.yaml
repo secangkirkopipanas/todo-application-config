@@ -73,7 +73,9 @@ spec:
         echo "$QUAY_IO_PASSWORD" | buildah login --username "$QUAY_IO_USERNAME" --password-stdin quay.io
 
         TAG_NAME="$(params.GIT_COMMIT_ID)"
-        TAG_NAME="${TAG_NAME:0:10}"
+        if [ ${#TAG_NAME} -gt 30 ]; then
+          TAG_NAME="${TAG_NAME:0:10}"
+        fi
         echo "Base image name: $(params.IMAGE):$TAG_NAME"
         NEW_TAG_NAME="$(params.GIT_REF)"
         NEW_TAG_NAME="${NEW_TAG_NAME//*\/}"
