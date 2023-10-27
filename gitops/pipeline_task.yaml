@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pipeline-task
+  name: pipeline-tasks
 spec:
   destination:
     name: ''
-    namespace: pipeline-task
+    namespace: pipeline-tasks
     server: https://kubernetes.default.svc
   source:
-    path: pipeline/task
+    path: pipeline/tasks
     repoURL: https://github.com/secangkirkopipanas/todo-application-infra/
     targetRevision: HEAD
   sources: []
