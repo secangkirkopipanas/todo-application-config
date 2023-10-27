@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: todo-dotnet-promote-to-uat
-  namespace: todo-app
 spec:
   params:
     - default: 'https://github.com/kahlai/todo-dotnet.git'
@@ -70,7 +69,7 @@ spec:
         - name: image
           value: $(params.IMAGE)
         - name: imageTagName
-          value: $(params.GIT_COMMIT_ID)
+          value: $(params.VERSION)
       runAfter:
         - retag-image
       taskRef:
