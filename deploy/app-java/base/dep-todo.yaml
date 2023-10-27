@@ -29,41 +29,41 @@ spec:
             - name: TZ
               valueFrom:
                 configMapKeyRef:
-                  name: todo-configmap
+                  name: todo-java-configmap
                   key: timezone
             - name: JAVA_OPTIONS
               valueFrom:
                 configMapKeyRef:
-                  name: todo-configmap
+                  name: todo-java-configmap
                   key: java_options
             - name: SPRING_ACTIVE_PROFILES
               valueFrom:
                 configMapKeyRef:
-                  name: todo-configmap
+                  name: todo-java-configmap
                   key: spring_active_profiles
             - name: DATASOURCE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: todo-configmap
+                  name: todo-java-configmap
                   key: datasource_url
             - name: DATASOURCE_DRIVER_CLASSNAME
               valueFrom:
                 configMapKeyRef:
-                  name: todo-configmap
+                  name: todo-java-configmap
                   key: datasource_driver_classname
             - name: DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
                   key: database-user
-                  name: todo-database
+                  name: todo-java-db-secret
             - name: DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   key: database-password
-                  name: todo-database
+                  name: todo-java-db-secret
           image: quay.io/rh_rh/todo-java:tag_name
           imagePullPolicy: IfNotPresent
-          name: todo-java
+          name: todo-java-app
           ports:
             - containerPort: 8080
               name: http

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-dotnet-app
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: todo-java-app
+          image: >-
+            quay.io/rh_rh/todo-java:1.0.0-alpha4
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 200m
+              memory: 1024Mi
