@@ -87,7 +87,7 @@ spec:
             secretKeyRef:
               key: database-password
               name: todo-database
-        image: quay.io/rh_rh/todo:e454079306
+        image: quay.io/rh_rh/todo:a7d0b835bc
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 5
