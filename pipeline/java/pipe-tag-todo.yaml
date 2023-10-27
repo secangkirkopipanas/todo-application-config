@@ -30,6 +30,9 @@ spec:
     - name: maven-local-repo
       description: | 
         This workspace contains all Maven dependencies used by the application.
+    - name: infra-repo
+      description: | 
+        This workspace contains all infra manifests.
   tasks:
     - name: retag-image
       taskRef:
@@ -70,6 +73,9 @@ spec:
           value: "quay.io/rh_rh/todo"
         - name: imageTagName
           value: "$(params.GIT_COMMIT_ID)"
+      workspaces:
+        - name: source
+          workspace: infra-repo
     - name: acs-deployment-check
       taskRef:
         name: acs-deployment-check
@@ -85,6 +91,11 @@ spec:
         - name: gitRepositoryUrl
           value: $(params.INFRA_GIT_REPO)
         - name: gitRepositoryRevision
-          value: $(params.INFRA_GIT_REF)
+          value: $(params.INFRA_GIT_REF)``
+        - name: skipPull
+          value: "true"
         - name: appGitRef
           value: $(params.SOURCE_CODE_GIT_REF)
+      workspaces:
+        - name: source
+          workspace: infra-repo

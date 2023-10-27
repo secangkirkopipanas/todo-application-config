@@ -26,6 +26,8 @@ spec:
         endpoint.  Defaults to `"false"`.
       name: insecure-skip-tls-verify
       type: string
+  workspaces:
+    - name: source
   steps:
   - image: 'quay.io/rh_rh/pipeline-utils:latest'
     name: update-manifest
@@ -63,11 +65,14 @@ spec:
       printf "Done!\n"
 
       printf -- "-> Fetching manifest from Git repo '($(params.gitRepositoryRevision))'... "
+      if [ -d $(pwd)/infra ]; then
+        rm -fR $(pwd)/infra
+      fi
       NEW_GIT_URL="$(params.gitRepositoryUrl)"
       NEW_GIT_URL=$(echo "${NEW_GIT_URL/https:\/\//https:\/\/$GITHUB_USERNAME:$GITHUB_TOKEN@}")
-      git clone --quiet "$NEW_GIT_URL" $(pwd)/repository
+      git clone --quiet "$NEW_GIT_URL" $(pwd)/infra
       git config --global credential.helper store
-      cd $(pwd)/repository
+      cd $(pwd)/infra
       git checkout --quiet "$(params.gitRepositoryRevision)"
       printf "Done!\n"
 
@@ -86,10 +91,4 @@ spec:
           printf -- "-> No changes in the local infra repo!\n\n"
         fi
       fi
-    volumeMounts:
-      - mountPath: /workspace/repository
-        name: repository
-    workingDir: /workspace
-  volumes:
-    - emptyDir: {}
-      name: repository
+    workingDir: $(workspaces.source.path)

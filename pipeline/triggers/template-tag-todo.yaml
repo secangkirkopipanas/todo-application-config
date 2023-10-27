@@ -44,3 +44,6 @@ spec:
         - name: maven-local-repo
           persistentVolumeClaim:
             claimName: maven-local-repo
+        - name: infra-repo
+          persistentVolumeClaim:
+            claimName: todo-infra-repo
