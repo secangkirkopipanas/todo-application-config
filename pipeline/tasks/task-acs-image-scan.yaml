@@ -20,6 +20,10 @@ spec:
       Full name of image to scan (example -- gcr.io/rox/sample:5.0-rc1)
     name: image
     type: string
+  - description: |
+      Last Git commit ID
+    name: git_commit_id
+    type: string
   - default: "false"
     description: |
       When set to `"true"`, skip verifying the TLS certs of the Central
@@ -51,6 +55,10 @@ spec:
       printf    " Container Image Scan with Stackrox        \n"
       printf -- "-------------------------------------------\n\n"
 
+      TAG_NAME="$(params.git_commit_id)"
+      TAG_NAME="${TAG_NAME:0:10}"
+      echo "Image name: $(params.image):$TAG_NAME"
+
       curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
         "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
         --output ./roxctl  \
@@ -59,4 +67,4 @@ spec:
       ./roxctl image scan \
         $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
         echo -n "--insecure-skip-tls-verify") \
-        -e "$ROX_CENTRAL_ENDPOINT" --image "$(params.image)"
+        -e "$ROX_CENTRAL_ENDPOINT" --image "$(params.image):$TAG_NAME"

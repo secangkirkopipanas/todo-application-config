@@ -20,10 +20,9 @@ spec:
       type: string
       default: develop
       description: "Git ref of infra code repo"
-    - name: APP_VERSION
+    - name: GIT_COMMIT_ID
       type: string
-      default: "0.0.1-SNAPSHOT"
-      description: "Application version"
+      description: "Last Git commit ID"
   workspaces:
     - name: shared-workspace
       description: | 
@@ -31,6 +30,9 @@ spec:
     - name: maven-local-repo
       description: | 
         This workspace contains all Maven dependencies used by the application.
+    - name: infra-repo
+      description: | 
+        This workspace contains all infra manifests.
   tasks:
     - name: fetch-source
       params:
@@ -55,7 +57,7 @@ spec:
         - name: OPENJDK_IMAGE
           value: registry.access.redhat.com/ubi9/openjdk-17:1.16
         - name: GOALS
-          value: "clean package"
+          value: "clean package checkstyle:check"
         - name: SKIP_TESTS
           value: "true"          
         - name: MAVEN_OPTS
@@ -76,10 +78,10 @@ spec:
         - name: maven-local-repo
           workspace: maven-local-repo
       params:
-        - name: APP_NAME
-          value: todo
         - name: IMAGE
-          value: quay.io/rh_rh/todo:$(params.APP_VERSION)
+          value: quay.io/rh_rh/todo
+        - name: GIT_COMMIT_ID
+          value: $(params.GIT_COMMIT_ID)
         - name: TLSVERIFY
           value: "false"
         - name: VERSION
@@ -97,7 +99,9 @@ spec:
         - name: insecure-skip-tls-verify
           value: "true"
         - name: image
-          value: quay.io/rh_rh/todo:$(params.APP_VERSION)
+          value: quay.io/rh_rh/todo
+        - name: git_commit_id
+          value: $(params.GIT_COMMIT_ID)
     - name: update-manifest-and-push
       taskRef:
         name: update-manifest
@@ -112,5 +116,12 @@ spec:
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
           value: "$(params.INFRA_GIT_REF)"
+        - name: kustomizationFile
+          value: deploy/app-java/overlays/dev/kustomization.yaml
+        - name: image
+          value: "quay.io/rh_rh/todo"
         - name: imageTagName
-          value: "$(params.APP_VERSION)"
+          value: "$(params.GIT_COMMIT_ID)"
+      workspaces:
+        - name: source
+          workspace: infra-repo

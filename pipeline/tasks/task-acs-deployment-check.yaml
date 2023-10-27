@@ -24,21 +24,28 @@ spec:
     - default: main
       name: gitRepositoryRevision
       type: string
+    - default: "false"
+      name: skipPull
+      type: string
+    - name: appGitRef
+      type: string
     - default: 'false'
       description: |
         When set to `"true"`, skip verifying the TLS certs of the Central
         endpoint.  Defaults to `"false"`.
       name: insecure-skip-tls-verify
       type: string
+  workspaces:
+    - name: source
   results:
     - description: Output of `roxctl deployment check`
       name: check_output
   steps:
-    - image: 'quay.io/redhat-gpte/alpine-git:latest'
+    - image: 'quay.io/rh_rh/pipeline-utils:latest'
       name: git-checkout
       script: |
         #!/usr/bin/env bash
-        set -x
+        set +x
 
         printf -- "-----------------------------------\n"
         printf    " Clone Infra Configuration         \n"
@@ -46,38 +53,15 @@ spec:
 
         set -eu -o pipefail
 
-        git clone "$(params.gitRepositoryUrl)" $(pwd)/repository
-        cd repository
-        git checkout "$(params.gitRepositoryRevision)"
-      volumeMounts:
-        - mountPath: /workspace/repository
-          name: repository
-      workingDir: /workspace
+        if [ "$(params.skipPull)" == "false" ]; then
+          git clone "$(params.gitRepositoryUrl)" $(pwd)/infra
+          cd infra
+          git checkout "$(params.gitRepositoryRevision)"
+        fi
+      workingDir: $(workspaces.source.path)
     - image: quay.io/wpernath/kustomize-ubi
       name: kustomize-build
       script: |
-        #!/usr/bin/env bash
-        set +x
-
-        printf -- "--------------------------------------------\n"
-        printf    " Build Deployment File with Kustomize       \n"
-        printf -- "--------------------------------------------\n\n"
-
-        set -eu -o pipefail
-
-        cd repository/deploy/app-java/overlays/sit
-
-        mkdir -p /workspace/repository/input
-        mkdir -p /workspace/repository/output
-
-        kustomize build . --output /workspace/repository/input/all.yaml
-      volumeMounts:
-        - mountPath: /workspace/repository
-          name: repository
-      workingDir: /workspace
-    - image: looztra/kubesplit
-      name: kustomize-split
-      script: >
         #!/usr/bin/env sh
         set +x
 
@@ -87,11 +71,32 @@ spec:
 
         set -eu -o pipefail
 
-        kubesplit -i /workspace/repository/input/all.yaml -o /workspace/repository/output
-      volumeMounts:
-        - mountPath: /workspace/repository
-          name: repository
-      workingDir: /workspace
+        if [[ "$(params.appGitRef)" == "refs/heads/develop" ]]; then
+          ENV=dev
+        elif [[ "$(params.appGitRef)" =~ ^refs/tags/.* ]]; then
+          ENV=sit
+        fi
+
+        cd infra/deploy/app-java/overlays/$ENV
+
+        mkdir -p $(workspaces.source.path)/infra/input
+        mkdir -p $(workspaces.source.path)/infra/output
+
+        kustomize build . --output $(workspaces.source.path)/infra/input/all.yaml
+      workingDir: $(workspaces.source.path)
+    - image: looztra/kubesplit
+      name: kustomize-split
+      script: >
+        #!/usr/bin/env sh
+
+        printf -- "--------------------------------------------\n"
+        printf    " Split Deployment File with Kustomize       \n"
+        printf -- "--------------------------------------------\n\n"
+
+        set -eu -o pipefail
+
+        kubesplit -i $(workspaces.source.path)/infra/input/all.yaml -o $(workspaces.source.path)/infra/output
+      workingDir: $(workspaces.source.path)
     - env:
         - name: ROX_API_TOKEN
           valueFrom:
@@ -103,17 +108,16 @@ spec:
             secretKeyRef:
               key: rox_central_endpoint
               name: $(params.rox_central_endpoint)
-      image: 'registry.access.redhat.com/ubi9:9.2'
+      image: 'quay.io/rh_rh/pipeline-utils:latest'
       name: rox-deploy-scan
       script: |
-        #!/usr/bin/env bash
-        set +x
+        #!/usr/bin/env sh
 
         printf -- "--------------------------------------\n"
         printf    " Deployment Check with Stackrox       \n"
         printf -- "--------------------------------------\n\n"
         
-        cd /workspace/repository/output
+        cd $(workspaces.source.path)/infra/output
 
         curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
           "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
@@ -127,10 +131,4 @@ spec:
           $( [ "$(params.insecure-skip-tls-verify)" = "true" ] && \
           echo -n "--insecure-skip-tls-verify") \
           -e "$ROX_CENTRAL_ENDPOINT" --file "$DEPLOYMENT_FILE"
-      volumeMounts:
-        - mountPath: /workspace/repository
-          name: repository
-      workingDir: /workspace/repository
-  volumes:
-    - emptyDir: {}
-      name: repository
+      workingDir: $(workspaces.source.path)/infra

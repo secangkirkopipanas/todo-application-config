@@ -1,4 +1,4 @@
-apiVersion: triggers.tekton.dev/v1alpha1
+apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: todo-push-event-listener
@@ -10,50 +10,46 @@ spec:
   serviceAccountName: pipeline
   triggers:
   - bindings:
-    - ref: app-globex-ui-binding
-    - ref: github-push-binding
+    - ref: github-push
     interceptors:
     - params:
       - name: secretRef
         value:
-          secretKey: webhook-secret-key
-          secretName: webhook-secret-globex-ui
+          secretName: github-credentials
+          secretKey: webhook-secret
       ref:
         name: github
     - params:
       - name: filter
-        value: (header.match('X-GitHub-Event', 'push') && body.repository.full_name
-          == 'dev-user/globex-ui')
+        value: (header.match('X-GitHub-Event', 'push') && !body.ref.startsWith('refs/tags'))
       - name: overlays
         value:
         - expression: body.ref.split('/')[2]
           key: ref
       ref:
         name: cel
-    name: build-from-push-globex-ui
+    name: build-from-push-todo
     template:
-      ref: app-globex-ui-template
+      ref: todo-trigger-template
   - bindings:
-    - ref: app-globex-ui-unsigned-binding
-    - ref: github-push-binding
+    - ref: github-push
     interceptors:
     - params:
       - name: secretRef
         value:
-          secretKey: webhook-secret-key
-          secretName: webhook-secret-globex-ui
+          secretName: github-credentials
+          secretKey: webhook-secret
       ref:
         name: github
     - params:
       - name: filter
-        value: (header.match('X-GitHub-Event', 'push') && body.repository.full_name
-          == 'dev-user/globex-ui')
+        value: (header.match('X-GitHub-Event', 'push') && body.ref.startsWith('refs/tags'))
       - name: overlays
         value:
         - expression: body.ref.split('/')[2]
           key: ref
       ref:
         name: cel
-    name: build-from-push-globex-ui-unsigned
+    name: build-from-tag-todo
     template:
-      ref: app-globex-ui-unsigned-template
+      ref: todo-tag-trigger-template

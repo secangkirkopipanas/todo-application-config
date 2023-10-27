@@ -27,13 +27,30 @@ spec:
       containers:
         - env:
             - name: TZ
-              value: Asia/Singapore
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: timezone
             - name: JAVA_OPTIONS
-              value: "-Xms1G -Xms1G"
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: java_options
             - name: SPRING_ACTIVE_PROFILES
-              value: dev
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: spring_active_profiles
             - name: DATASOURCE_URL
-              value: jdbc:h2:mem:todo
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: datasource_url
+            - name: DATASOURCE_DRIVER_CLASSNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-configmap
+                  key: datasource_driver_classname
             - name: DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -44,9 +61,7 @@ spec:
                 secretKeyRef:
                   key: database-password
                   name: todo-database
-            - name: DATASOURCE_DRIVER_CLASSNAME
-              value: org.hibernate.dialect.H2Dialect
-          image: quay.io/rh_rh/todo-application:0.0.1-SNAPSHOT
+          image: quay.io/rh_rh/todo:tag_name
           imagePullPolicy: IfNotPresent
           name: todo
           ports:

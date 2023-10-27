@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: update-manifest
+  name: push-manifest
 spec:
   params:
     - default: >-
@@ -10,8 +10,6 @@ spec:
       type: string
     - default: main
       name: gitRepositoryRevision
-      type: string
-    - name: kustomizationFile
       type: string
     - name: image
       type: string
@@ -53,9 +51,9 @@ spec:
       #!/usr/bin/env bash
       set +x
 
-      printf -- "------------------------------\n"
-      printf    " Update Manifest and Push     \n"
-      printf -- "------------------------------\n\n"
+      printf -- "------------------\n"
+      printf    " Push Manifest    \n"
+      printf -- "------------------\n\n"
 
       TAG_NAME="$(params.imageTagName)"
       TAG_NAME="${TAG_NAME:0:10}"
@@ -64,23 +62,10 @@ spec:
       printf -- "-> Configuring environment... "
       git config --global user.email "$GITHUB_EMAIL"
       git config --global user.name "$GITHUB_USERNAME"
-      printf "Done!\n"
-
-      printf -- "-> Fetching manifest from Git repo '($(params.gitRepositoryRevision))'... "
-      if [ -d $(pwd)/infra ]; then
-        rm -fR $(pwd)/infra
-      fi
-      NEW_GIT_URL="$(params.gitRepositoryUrl)"
-      NEW_GIT_URL=$(echo "${NEW_GIT_URL/https:\/\//https:\/\/$GITHUB_USERNAME:$GITHUB_TOKEN@}")
-      git clone --quiet "$NEW_GIT_URL" $(pwd)/infra
       git config --global credential.helper store
-      cd $(pwd)/infra
-      git checkout --quiet "$(params.gitRepositoryRevision)"
       printf "Done!\n"
 
-      printf -- "-> Updating manifest '$(params.kustomizationFile)' to use '$(params.image):$TAG_NAME' image... "
-      yq e -i ".images[0].newTag = \"$TAG_NAME\"" $(params.kustomizationFile)
-      printf "Done!\n"
+      cd $(pwd)/infra
 
       if [ -n "$(git status --porcelain)" ]; then
         printf -- "-> Pushing manifest to Git repo... "
