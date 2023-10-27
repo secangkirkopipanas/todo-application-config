@@ -46,8 +46,8 @@ spec:
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
           value: ""
-        - name: kustomizationFile
-          value: deploy/app-java/overlays/prod/kustomization.yaml
+        - name: manifestFile
+          value: deploy/app-java/overlays/prod/dep-todo.yaml
         - name: image
           value: $(params.IMAGE)
         - name: imageTagName

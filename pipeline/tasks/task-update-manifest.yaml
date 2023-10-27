@@ -11,7 +11,7 @@ spec:
     - default: main
       name: gitRepositoryRevision
       type: string
-    - name: kustomizationFile
+    - name: manifestFile
       type: string
     - name: image
       type: string
@@ -80,8 +80,8 @@ spec:
       git checkout --quiet "$(params.gitRepositoryRevision)"
       printf "Done!\n"
 
-      printf -- "-> Updating manifest '$(params.kustomizationFile)' to use '$(params.image):$TAG_NAME' image... "
-      yq e -i ".images[0].newTag = \"$TAG_NAME\"" $(params.kustomizationFile)
+      printf -- "-> Updating manifest '$(params.manifestFile)' to use '$(params.image):$TAG_NAME' image... "
+      yq e -i ".spec.template.spec.containers[0].image = \"$(params.image):$TAG_NAME\"" $(params.manifestFile)
       printf "Done!\n"
 
       if [ -n "$(git status --porcelain)" ]; then
