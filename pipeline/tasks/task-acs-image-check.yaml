@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: acs-image-check
-  namespace: todo-app
 spec:
   description: >-
     Policy check an image with StackRox/RHACS This tasks allows you to check an
