@@ -1,0 +1,131 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: update-dotnet-manifest
+spec:
+  params:
+    - default: >-
+        https://dev-user:openshift@gitea.apps.cluster-5khxf.5khxf.sandbox2563.opentlc.com/dev-user/securing-software-supply-chain.git
+      name: gitRepositoryUrl
+      type: string
+    - default: main
+      name: gitRepositoryRevision
+      type: string
+    - name: kustomizationFile
+      type: string
+    - name: image
+      type: string
+    - name: imageTagName
+      type: string
+    - default: ''
+      description: |
+        When set to `""``, skip push to Git repository.
+      name: pushToRevision
+      type: string
+    - default: 'false'
+      description: |
+        When set to `"true"`, skip verifying the TLS certs of the Central
+        endpoint.  Defaults to `"false"`.
+      name: insecure-skip-tls-verify
+      type: string
+  steps:
+    - env:
+        - name: GITHUB_EMAIL
+          valueFrom:
+            secretKeyRef:
+              key: email
+              name: github-credentials
+        - name: GITHUB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: github-credentials
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: token
+              name: github-credentials
+      image: 'quay.io/rh_rh/pipeline-utils:latest'
+      name: update-manifest
+      resources: {}
+      script: >
+        #!/usr/bin/env bash
+
+        set +x
+
+
+        printf -- "------------------------------\n"
+
+        printf    " Update Manifest and Push     \n"
+
+        printf -- "------------------------------\n\n"
+
+
+        TAG_NAME="$(params.imageTagName)"
+
+        if [ ${#TAG_NAME} -gt 30 ]; then
+          TAG_NAME="${TAG_NAME:0:10}"
+        fi
+
+        echo "Image name: $(params.image):$TAG_NAME"
+
+
+        printf -- "-> Configuring environment... "
+
+        git config --global user.email "$GITHUB_EMAIL"
+
+        git config --global user.name "$GITHUB_USERNAME"
+
+        printf "Done!\n"
+
+
+        printf -- "-> Fetching manifest from Git repo
+        '($(params.gitRepositoryRevision))'... "
+
+        if [ -d $(pwd)/infra ]; then
+          rm -fR $(pwd)/infra
+        fi
+
+        NEW_GIT_URL="$(params.gitRepositoryUrl)"
+
+        NEW_GIT_URL=$(echo
+        "${NEW_GIT_URL/https:\/\//https:\/\/$GITHUB_USERNAME:$GITHUB_TOKEN@}")
+
+        git clone --quiet "$NEW_GIT_URL" $(pwd)/infra
+
+        git config --global credential.helper store
+
+        cd $(pwd)/infra
+
+        git checkout --quiet "$(params.gitRepositoryRevision)"
+
+        printf "Done!\n"
+
+
+        printf -- "-> Updating manifest '$(params.kustomizationFile)' to use
+        '$(params.image):$TAG_NAME' image... "
+
+        IMAGE_NAME='$(params.image):'$TAG_NAME
+
+        yq e -i ".spec.template.spec.containers[0].image = \"$IMAGE_NAME\""
+        $(params.kustomizationFile)
+
+        printf "Done!\n"
+
+
+        if [ -n "$(git status --porcelain)" ]; then
+          printf -- "-> Pushing manifest to Git repo... "
+          if [ ! -z "$(params.pushToRevision)" ]; then
+            git add *
+            git commit --quiet -m "[PIPELINE] Updated manifest with image name '$(params.image):$TAG_NAME'"
+            git push --quiet -f --set-upstream origin $(params.pushToRevision)
+            printf "Done!\n\n"
+          else
+            printf "Skipped!\n\n"
+          fi
+        else
+          printf -- "-> No changes in the local infra repo!\n\n"
+        fi
+      workingDir: $(workspaces.source.path)
+  workspaces:
+    - name: source
