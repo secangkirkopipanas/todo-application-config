@@ -1,11 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-- ../../base
+  - ../../base
 images:
   - name: quay.io/rh_rh/todo
     newName: quay.io/rh_rh/todo
-    newTag: "0.0.1"
+    newTag: "1.0.0-alph"
 configMapGenerator:
   - name: todo-configmap
     literals:
