@@ -9,4 +9,4 @@ spec:
       containers:
         - name: todo-dotnet-app
           image: >-
-            quay.io/rh_rh/todo-dotnet:abksfoieshr
+            quay.io/rh_rh/todo-dotnet:$TAG_NAME
