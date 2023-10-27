@@ -5,7 +5,7 @@ resources:
 images:
   - name: quay.io/rh_rh/todo
     newName: quay.io/rh_rh/todo
-    newTag: "d66a20c486"
+    newTag: "e454079306"
 configMapGenerator:
   - name: todo-configmap
     literals:
