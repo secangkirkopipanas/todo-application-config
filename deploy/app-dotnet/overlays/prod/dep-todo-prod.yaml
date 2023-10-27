@@ -9,7 +9,7 @@ spec:
       containers:
         - name: todo-dotnet-app
           image: >-
-            quay.io/rh_rh/todo-dotnet:strenv(TAG_NAME)
+            $IMAGE_NAME
           resources:
             limits:
               cpu: 500m
