@@ -2,10 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/instance: todo-db
-    app.kubernetes.io/name: todo-db
+    app.kubernetes.io/instance: todo-java-db
+    app.kubernetes.io/name: todo-java-db
     app.openshift.io/runtime: spring
-  name: todo-db
+  name: todo-java-db
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -21,13 +21,21 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: todo-db
-        app.kubernetes.io/part-of: todo-app
+        app.kubernetes.io/name: todo-java-db
+        app.kubernetes.io/part-of: todo-java-app
     spec:
       containers:
         - env:
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-java-db-configmap
+                  key: timezone
             - name: POSTGRESQL_DATABASE
-              value: tododb
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-java-db-configmap
+                  key: database-name
             - name: POSTGRESQL_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -44,7 +52,7 @@ spec:
               value: Asia/Singapore
           image: bitnami/postgresql:15.4.0-debian-11-r54
           imagePullPolicy: IfNotPresent
-          name: todo
+          name: todo-java-db
           ports:
             - containerPort: 5432
               name: psql-port
