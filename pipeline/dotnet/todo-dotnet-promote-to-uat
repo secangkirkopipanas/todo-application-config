@@ -1,0 +1,135 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: todo-dotnet-promote-to-uat
+  namespace: todo-app
+spec:
+  params:
+    - default: 'https://github.com/kahlai/todo-dotnet.git'
+      description: Git repository of source code
+      name: SOURCE_CODE_GIT_REPO
+      type: string
+    - default: main
+      description: Git ref of source code repo
+      name: SOURCE_CODE_GIT_REF
+      type: string
+    - default: 'https://github.com/secangkirkopipanas/todo-application-infra.git'
+      description: Git repository of infra code repo
+      name: INFRA_GIT_REPO
+      type: string
+    - default: main
+      description: Git ref of infra code repo
+      name: INFRA_GIT_REF
+      type: string
+    - description: Last Git commit ID
+      name: GIT_COMMIT_ID
+      type: string
+    - default: quay.io/rh_rh/todo-dotnet
+      description: Image
+      name: IMAGE
+      type: string
+    - default: deploy/app-dotnet/overlays/sit/dep-todo-sit.yaml
+      description: Path to deployment manifest
+      name: MANIFEST_FILE
+      type: string
+    - default: latest
+      description: Version
+      name: VERSION
+      type: string
+  tasks:
+    - name: retag-image
+      params:
+        - name: IMAGE
+          value: $(params.IMAGE)
+        - name: GIT_COMMIT_ID
+          value: $(params.GIT_COMMIT_ID)
+        - name: TLSVERIFY
+          value: 'false'
+        - name: GIT_REF
+          value: $(params.VERSION)
+      taskRef:
+        kind: Task
+        name: s2i-retag
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: maven-local-repo
+          workspace: shared-workspace
+    - name: update-manifest
+      params:
+        - name: insecure-skip-tls-verify
+          value: 'true'
+        - name: gitRepositoryUrl
+          value: $(params.INFRA_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: pushToRevision
+          value: ''
+        - name: kustomizationFile
+          value: $(params.MANIFEST_FILE)
+        - name: image
+          value: $(params.IMAGE)
+        - name: imageTagName
+          value: $(params.GIT_COMMIT_ID)
+      runAfter:
+        - retag-image
+      taskRef:
+        kind: Task
+        name: update-dotnet-manifest
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+    - name: acs-deployment-check
+      params:
+        - name: rox_api_token
+          value: stackrox
+        - name: rox_central_endpoint
+          value: stackrox
+        - name: insecure-skip-tls-verify
+          value: 'true'
+        - name: gitRepositoryUrl
+          value: $(params.INFRA_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.INFRA_GIT_REF)``
+        - name: skipPull
+          value: 'true'
+        - name: appGitRef
+          value: $(params.SOURCE_CODE_GIT_REF)
+      runAfter:
+        - update-manifest
+      taskRef:
+        kind: Task
+        name: acs-deployment-check
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+    - name: push-manifest
+      params:
+        - name: insecure-skip-tls-verify
+          value: 'true'
+        - name: gitRepositoryUrl
+          value: $(params.INFRA_GIT_REPO)
+        - name: gitRepositoryRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: pushToRevision
+          value: $(params.INFRA_GIT_REF)
+        - name: image
+          value: $(params.IMAGE)
+        - name: imageTagName
+          value: $(params.VERSION)
+      runAfter:
+        - acs-deployment-check
+      taskRef:
+        kind: Task
+        name: push-manifest
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+  workspaces:
+    - description: >
+        This workspace contains source code, so they can be read by the next
+        task.
+      name: shared-workspace
+    - description: |
+        This workspace contains all infra manifests.
+      name: infra-repo
