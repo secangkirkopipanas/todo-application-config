@@ -117,6 +117,10 @@ spec:
           --digestfile $(workspaces.source.path)/image-digest $(params.IMAGE):$TAG_NAME \
           docker://$(params.IMAGE):$TAG_NAME
 
+        rm -f $(workspaces.infra-repo.path)/image.env
+        echo "IMAGE_NAME=$(params.IMAGE)" >> $(workspaces.infra-repo.path)/image.env
+        echo "TAG_NAME=$TAG_NAME" >> $(workspaces.infra-repo.path)/image.env
+
         cat $(workspaces.source.path)/image-digest | tee /tekton/results/IMAGE_DIGEST
       securityContext:
         capabilities:
@@ -145,3 +149,4 @@ spec:
       optional: true
     - name: maven-local-repo
       mountPath: /tmp/maven-repo
+    - name: infra-repo

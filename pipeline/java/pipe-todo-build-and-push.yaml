@@ -81,6 +81,8 @@ spec:
           workspace: shared-workspace
         - name: maven-local-repo
           workspace: maven-local-repo
+        - name: infra-repo
+          workspace: infra-repo
       params:
         - name: IMAGE
           value: $(params.IMAGE)
@@ -144,5 +146,5 @@ spec:
         - name: imageTagName
           value: "$(params.GIT_COMMIT_ID)"
       workspaces:
-        - name: source
+        - name: infra-repo
           workspace: infra-repo

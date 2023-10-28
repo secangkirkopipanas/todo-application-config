@@ -53,8 +53,8 @@ spec:
         - name: VERSION
           value: latest
       workspaces:
-        - name: source
-          workspace: shared-workspace
+        - name: infra-repo
+          workspace: infra-repo
         - name: maven-local-repo
           workspace: maven-local-repo
     - name: update-manifest
@@ -78,7 +78,7 @@ spec:
         - name: imageTagName
           value: "$(params.GIT_COMMIT_ID)"
       workspaces:
-        - name: source
+        - name: infra-repo
           workspace: infra-repo
     - name: acs-deployment-check
       taskRef:
@@ -117,10 +117,6 @@ spec:
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
           value: $(params.INFRA_GIT_REF)
-        - name: image
-          value: $(params.IMAGE)
-        - name: imageTagName
-          value: "$(params.GIT_COMMIT_ID)"
       workspaces:
-        - name: source
+        - name: infra-repo
           workspace: infra-repo

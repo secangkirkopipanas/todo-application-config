@@ -81,6 +81,9 @@ spec:
         NEW_TAG_NAME="${NEW_TAG_NAME//*\/}"
         printf -- "New image name: $(params.IMAGE):$NEW_TAG_NAME\n\n"
 
+        echo "IMAGE_NAME=$(params.IMAGE)" >> $(workspaces.infra-repo.path)/image.env
+        echo "TAG_NAME=$NEW_TAG_NAME" >> $(workspaces.infra-repo.path)/image.env
+
         [[ "$(workspaces.dockerconfig.bound)" == "true" ]] && export DOCKER_CONFIG="$(workspaces.dockerconfig.path)"
 
         echo "-> Pulling and tag target image"
@@ -112,7 +115,7 @@ spec:
     - emptyDir: {}
       name: env-vars
   workspaces:
-    - name: source
+    - name: infra-repo
     - description: >-
         An optional workspace that allows providing a .docker/config.json file
         for Buildah to access the container registry. The file should be placed

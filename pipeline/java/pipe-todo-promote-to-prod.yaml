@@ -53,7 +53,7 @@ spec:
         - name: imageTagName
           value: "$(params.TAG_NAME)"
       workspaces:
-        - name: source
+        - name: infra-repo
           workspace: infra-repo
     - name: acs-deployment-check
       taskRef:
@@ -90,10 +90,6 @@ spec:
           value: $(params.INFRA_GIT_REF)
         - name: pushToRevision
           value: $(params.INFRA_GIT_REF)
-        - name: image
-          value: $(params.IMAGE)
-        - name: imageTagName
-          value: "$(params.TAG_NAME)"
       workspaces:
-        - name: source
+        - name: infra-repo
           workspace: infra-repo

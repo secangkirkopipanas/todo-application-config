@@ -11,10 +11,6 @@ spec:
     - default: main
       name: gitRepositoryRevision
       type: string
-    - name: image
-      type: string
-    - name: imageTagName
-      type: string
     - default: ''
       name: pushToRevision
       type: string
@@ -27,7 +23,7 @@ spec:
       name: insecure-skip-tls-verify
       type: string
   workspaces:
-    - name: source
+    - name: infra-repo
   steps:
   - image: 'quay.io/rh_rh/pipeline-utils:latest'
     name: update-manifest
@@ -51,15 +47,16 @@ spec:
       #!/usr/bin/env bash
       set +x
 
+      export $(cat image.env | xargs)
+
       printf -- "------------------\n"
       printf    " Push Manifest    \n"
       printf -- "------------------\n\n"
 
-      TAG_NAME="$(params.imageTagName)"
       if [ ${#TAG_NAME} -gt 30 ]; then
         TAG_NAME="${TAG_NAME:0:10}"
       fi
-      echo "Image name: $(params.image):$TAG_NAME"
+      echo "Image name: $IMAGE_NAME:$TAG_NAME"
 
       printf -- "-> Configuring environment... "
       git config --global user.email "$GITHUB_EMAIL"
@@ -74,7 +71,7 @@ spec:
         if [ ! -z "$(params.pushToRevision)" ]; then
           rm -fR input output
           git add *
-          git commit --quiet -m "[PIPELINE] Updated manifest with image name '$(params.image):$TAG_NAME'"
+          git commit --quiet -m "[PIPELINE] Updated manifest with image name '$IMAGE_NAME:$TAG_NAME'"
           git push --quiet -f --set-upstream origin $(params.pushToRevision)
           printf "Done!\n\n"
         else
@@ -83,4 +80,6 @@ spec:
       else
         printf -- "-> No changes in the local infra repo!\n\n"
       fi
-    workingDir: $(workspaces.source.path)
+
+      rm -fR $(workspaces.infra-repo.path)/*
+    workingDir: $(workspaces.infra-repo.path)

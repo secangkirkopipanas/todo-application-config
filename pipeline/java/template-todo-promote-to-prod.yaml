@@ -12,8 +12,6 @@ spec:
     name: git-repo-name
   - description: The git repository URL.
     name: git-repo-url
-  - description: The git ref.
-    name: git-ref
   - description: The git tag name.
     name: git-tag-name
   - description: The repository name for this PullRequest.

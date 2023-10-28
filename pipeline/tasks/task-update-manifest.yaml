@@ -29,7 +29,7 @@ spec:
       name: insecure-skip-tls-verify
       type: string
   workspaces:
-    - name: source
+    - name: infra-repo
   steps:
   - image: 'quay.io/rh_rh/pipeline-utils:latest'
     name: update-manifest
@@ -53,15 +53,23 @@ spec:
       #!/usr/bin/env bash
       set +x
 
+      if [ -f image.env ]; then
+        export $(cat image.env | xargs)
+      else
+        IMAGE_NAME=$(params.image)
+        TAG_NAME="$(params.imageTagName)"
+        echo "IMAGE_NAME=$IMAGE_NAME" >> $(workspaces.infra-repo.path)/image.env
+        echo "TAG_NAME=$TAG_NAME" >> $(workspaces.infra-repo.path)/image.env
+      fi
+
       printf -- "------------------------------\n"
       printf    " Update Manifest and Push     \n"
       printf -- "------------------------------\n\n"
 
-      TAG_NAME="$(params.imageTagName)"
       if [ ${#TAG_NAME} -gt 30 ]; then
         TAG_NAME="${TAG_NAME:0:10}"
       fi
-      echo "Image name: $(params.image):$TAG_NAME"
+      echo "Image name: $IMAGE_NAME:$TAG_NAME"
 
       printf -- "-> Configuring environment... "
       git config --global user.email "$GITHUB_EMAIL"
@@ -80,21 +88,27 @@ spec:
       git checkout --quiet "$(params.gitRepositoryRevision)"
       printf "Done!\n"
 
-      printf -- "-> Updating manifest '$(params.manifestFile)' to use '$(params.image):$TAG_NAME' image... "
-      yq e -i ".spec.template.spec.containers[0].image = \"$(params.image):$TAG_NAME\"" $(params.manifestFile)
+      # printf -- "-> Updating manifest '$(params.manifestFile)' to use '$(params.image):$TAG_NAME' image... "
+      # yq e -i ".spec.template.spec.containers[0].image = \"$(params.image):$TAG_NAME\"" $(params.manifestFile)
+      # printf "Done!\n"
+
+      printf -- "-> Updating manifest '$(params.manifestFile)' to use '$IMAGE_NAME:$TAG_NAME' image... "
+      yq e -i ".spec.template.spec.containers[0].image = \"$IMAGE_NAME:$TAG_NAME\"" $(params.manifestFile)
       printf "Done!\n"
 
       if [ -n "$(git status --porcelain)" ]; then
         printf -- "-> Pushing manifest to Git repo... "
         if [ ! -z "$(params.pushToRevision)" ]; then
           git add *
-          git commit --quiet -m "[PIPELINE] Updated manifest with image name '$(params.image):$TAG_NAME'"
+          git commit --quiet -m "[PIPELINE] Updated manifest with image name '$IMAGE_NAME:$TAG_NAME'"
           git push --quiet -f --set-upstream origin $(params.pushToRevision)
           printf "Done!\n\n"
+
+          rm -fR $(workspaces.infra-repo.path)/*
         else
           printf "Skipped!\n\n"
         fi
       else
         printf -- "-> No changes in the local infra repo!\n\n"
       fi
-    workingDir: $(workspaces.source.path)
+    workingDir: $(workspaces.infra-repo.path)
