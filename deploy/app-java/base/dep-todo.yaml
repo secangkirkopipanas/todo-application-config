@@ -5,7 +5,7 @@ metadata:
     app.kubernetes.io/instance: todo-java-app
     app.kubernetes.io/name: todo-java
     app.openshift.io/runtime: spring
-  name: todo-java
+  name: todo-java-app
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
