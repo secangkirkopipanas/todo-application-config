@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   source:
     path: pipeline/dotnet
-    repoURL: https://github.com/secangkirkopipanas/todo-application-infra/
+    repoURL: https://github.com/secangkirkopipanas/todo-application-infra
     targetRevision: HEAD
   sources: []
   project: default
