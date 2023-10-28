@@ -68,7 +68,7 @@ spec:
         printf -- "-------------------------------------------------\n\n"
 
         s2i build $(params.PATH_CONTEXT) \
-        image-registry.openshift-image-registry.svc:5000/openshift/java:$(params.VERSION) \
+        registry.access.redhat.com/ubi8/openjdk-17:$(params.VERSION) \
         --image-scripts-url image:///usr/local/s2i \
         --as-dockerfile /gen-source/Dockerfile.gen
       volumeMounts:
@@ -97,8 +97,6 @@ spec:
         printf -- "---------------------------------------------------\n"
         printf    " Building Container Image and Push to Registry     \n"
         printf -- "---------------------------------------------------\n\n"
-
-        echo "$QUAY_IO_PASSWORD" | buildah login --username "$QUAY_IO_USERNAME" --password-stdin quay.io
 
         TAG_NAME="$(params.GIT_COMMIT_ID)"
         if [ ${#TAG_NAME} -gt 30 ]; then

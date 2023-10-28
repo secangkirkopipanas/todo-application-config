@@ -76,7 +76,7 @@ spec:
       git config --global user.name "$GITHUB_USERNAME"
       printf "Done!\n"
 
-      printf -- "-> Fetching manifest from Git repo '($(params.gitRepositoryRevision))'... "
+      printf -- "-> Fetching manifest from Git repo '$(params.gitRepositoryUrl)'... "
       if [ -d $(pwd)/infra ]; then
         rm -fR $(pwd)/infra
       fi

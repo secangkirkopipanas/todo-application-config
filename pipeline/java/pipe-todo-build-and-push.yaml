@@ -37,6 +37,9 @@ spec:
     - name: infra-repo
       description: | 
         This workspace contains all infra manifests.
+    - name: dockerconfig
+      description: | 
+        This workspace contains all infra manifests.
   tasks:
     - name: fetch-source
       params:
@@ -83,6 +86,8 @@ spec:
           workspace: maven-local-repo
         - name: infra-repo
           workspace: infra-repo
+        - name: dockerconfig
+          workspace: dockerconfig
       params:
         - name: IMAGE
           value: $(params.IMAGE)
