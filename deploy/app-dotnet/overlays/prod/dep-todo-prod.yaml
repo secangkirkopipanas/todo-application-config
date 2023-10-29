@@ -9,7 +9,7 @@ spec:
       containers:
         - name: todo-dotnet-app
           image: >-
-            quay.io/rh_rh/todo-dotnet:v1.0- beta
+            quay.io/rh_rh/todo-dotnet:latest
           resources:
             limits:
               cpu: 500m
