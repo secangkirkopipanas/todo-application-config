@@ -41,9 +41,6 @@ spec:
         - name: shared-workspace
           persistentVolumeClaim:
             claimName: todo-java-workspace
-        - name: maven-local-repo
-          persistentVolumeClaim:
-            claimName: maven-local-repo
         - name: infra-repo
           persistentVolumeClaim:
             claimName: todo-java-infra-workspace

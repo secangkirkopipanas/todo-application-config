@@ -31,10 +31,10 @@ spec:
     - name: shared-workspace
       description: | 
         This workspace contains source code, so they can be read by the next task.
-    - name: maven-local-repo
-      description: | 
-        This workspace contains all Maven dependencies used by the application.
     - name: infra-repo
+      description: | 
+        This workspace contains all infra manifests.
+    - name: dockerconfig
       description: | 
         This workspace contains all infra manifests.
   tasks:
@@ -50,13 +50,11 @@ spec:
           value: $(params.SOURCE_CODE_GIT_REF)
         - name: TLSVERIFY
           value: "false"
-        - name: VERSION
-          value: latest
       workspaces:
         - name: infra-repo
           workspace: infra-repo
-        - name: maven-local-repo
-          workspace: maven-local-repo
+        - name: dockerconfig
+          workspace: dockerconfig
     - name: update-manifest
       taskRef:
         name: update-manifest

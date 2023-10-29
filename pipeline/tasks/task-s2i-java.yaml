@@ -79,17 +79,6 @@ spec:
       workingDir: $(workspaces.source.path)/target
     - image: $(params.BUILDER_IMAGE)
       name: build-and-push
-      env:
-        - name: QUAY_IO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: container-registry-secret
-              key: "username"
-        - name: QUAY_IO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: container-registry-secret
-              key: "password"
       script: |
         #!/usr/bin/env bash
         set +x

@@ -47,3 +47,6 @@ spec:
         - name: infra-repo
           persistentVolumeClaim:
             claimName: todo-java-infra-workspace
+        - name: dockerconfig
+          secret:
+            secretName: image-registry-secret

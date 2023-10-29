@@ -27,9 +27,6 @@ spec:
     - name: shared-workspace
       description: | 
         This workspace contains source code, so they can be read by the next task.
-    - name: maven-local-repo
-      description: | 
-        This workspace contains all Maven dependencies used by the application.
     - name: infra-repo
       description: | 
         This workspace contains all infra manifests.

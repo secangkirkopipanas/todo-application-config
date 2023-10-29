@@ -39,7 +39,7 @@ spec:
         This workspace contains all infra manifests.
     - name: dockerconfig
       description: | 
-        This workspace contains all infra manifests.
+        This workspace contains docker config.
   tasks:
     - name: fetch-source
       params:

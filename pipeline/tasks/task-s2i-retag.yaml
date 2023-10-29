@@ -51,17 +51,6 @@ spec:
   steps:
     - image: $(params.BUILDER_IMAGE)
       name: retag-and-push
-      env:
-        - name: QUAY_IO_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: container-registry-secret
-              key: "username"
-        - name: QUAY_IO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: container-registry-secret
-              key: "password"
       script: |
         #!/usr/bin/env bash
         set +x
@@ -69,8 +58,6 @@ spec:
         printf -- "---------------------------------------------------\n"
         printf    " Re-tag Container Image and Push to Registry       \n"
         printf -- "---------------------------------------------------\n\n"
-
-        echo "$QUAY_IO_PASSWORD" | buildah login --username "$QUAY_IO_USERNAME" --password-stdin quay.io
 
         TAG_NAME="$(params.GIT_COMMIT_ID)"
         if [ ${#TAG_NAME} -gt 30 ]; then
@@ -122,5 +109,3 @@ spec:
         at the root of the Workspace with name config.json.
       name: dockerconfig
       optional: true
-    - name: maven-local-repo
-      mountPath: /tmp/maven-repo
