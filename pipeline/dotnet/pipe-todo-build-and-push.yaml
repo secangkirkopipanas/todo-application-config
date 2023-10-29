@@ -8,13 +8,10 @@ metadata:
     pipeline.openshift.io/runtime: dotnet
     pipeline.openshift.io/runtime-version: 7.0-ubi8
     pipeline.openshift.io/type: kubernetes
-  name: todo-dotnet-build-and-deploy
+  name: todo-dotnet-build-and-push
 spec:
   params:
-    - default: todo-dotnet-app
-      name: APP_NAME
-      type: string
-    - default: 'https://github.com/kahlai/todo-dotnet.git'
+    - default: 'https://github.com/secangkirkopipanas/todo-dotnet-application.git'
       name: GIT_REPO
       type: string
     - default: main
@@ -22,12 +19,6 @@ spec:
       type: string
     - default: quay.io/rh_rh/todo-dotnet
       name: IMAGE_NAME
-      type: string
-    - default: .
-      name: PATH_CONTEXT
-      type: string
-    - default: 7.0-ubi8
-      name: VERSION
       type: string
     - default: 'https://github.com/secangkirkopipanas/todo-application-infra.git'
       description: Git repository of infra code
@@ -37,8 +28,7 @@ spec:
       description: Git ref of infra code repo
       name: INFRA_GIT_REF
       type: string
-    - default: latest
-      description: Last Git commit ID
+    - description: Last Git commit ID
       name: GIT_COMMIT_ID
       type: string
     - default: deploy/app-dotnet/overlays/dev/dep-todo-dev.yaml
@@ -46,7 +36,7 @@ spec:
       name: MANIFEST_FILE
       type: string
   tasks:
-    - name: fetch-repository
+    - name: fetch-source
       params:
         - name: url
           value: $(params.GIT_REPO)
@@ -70,18 +60,16 @@ spec:
           value: $(params.GIT_COMMIT_ID)
         - name: TLSVERIFY
           value: 'false'
-        - name: PATH_CONTEXT
-          value: $(params.PATH_CONTEXT)
-        - name: VERSION
-          value: $(params.VERSION)
       runAfter:
-        - fetch-repository
+        - fetch-source
       taskRef:
         kind: Task
         name: s2i-dotnet
       workspaces:
         - name: source
           workspace: workspace
+        - name: dockerconfig
+          workspace: dockerconfig
     - name: acs-image-scan
       params:
         - name: rox_central_endpoint
@@ -142,3 +130,4 @@ spec:
           workspace: workspace
   workspaces:
     - name: workspace
+    - name: dockerconfig
