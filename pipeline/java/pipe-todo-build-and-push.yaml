@@ -57,7 +57,7 @@ spec:
         workspace: shared-workspace
     - name: build
       taskRef:
-        name: maven-openjdk17
+        name: maven
       runAfter:
         - fetch-source
       params:

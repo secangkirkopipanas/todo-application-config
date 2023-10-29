@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: maven-openjdk17
+  name: maven
 spec:
   params:
   - name: OPENJDK_IMAGE
