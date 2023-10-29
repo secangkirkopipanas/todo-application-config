@@ -48,3 +48,6 @@ spec:
         - name: dockerconfig
           secret:
             secretName: image-registry-secret
+        - name: infra-repo
+          persistentVolumeClaim:
+            claimName: todo-dotnet-infra-workspace

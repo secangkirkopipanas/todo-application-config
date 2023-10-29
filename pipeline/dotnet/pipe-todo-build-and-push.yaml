@@ -118,16 +118,19 @@ spec:
           value: $(params.IMAGE_NAME)
         - name: imageTagName
           value: $(params.GIT_COMMIT_ID)
-        - name: kustomizationFile
+        - name: manifestFile
           value: $(params.MANIFEST_FILE)
       runAfter:
         - acs-image-check
       taskRef:
         kind: Task
-        name: update-dotnet-manifest
+        name: update-manifest
       workspaces:
-        - name: source
-          workspace: workspace
+        - name: infra-repo
+          workspace: infra-repo
   workspaces:
     - name: workspace
     - name: dockerconfig
+    - name: infra-repo
+      description: | 
+        This workspace contains all infra manifests.
