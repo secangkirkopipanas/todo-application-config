@@ -5,7 +5,7 @@ metadata:
 spec:
   destination:
     name: ''
-    namespace: pipeline-todo
+    namespace: todo-dev
     server: https://kubernetes.default.svc
   source:
     path: pipeline/dotnet

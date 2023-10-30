@@ -6,11 +6,11 @@ spec:
   generators:
   - list:
       elements:
-      - cluster: dev-2
+      - cluster: dev
         url: https://kubernetes.default.svc
   template:
     metadata:
-      name: '{{cluster}}-todo-application'
+      name: '{{cluster}}-todo-dotnet'
     spec:
       destination:
         name: ''
