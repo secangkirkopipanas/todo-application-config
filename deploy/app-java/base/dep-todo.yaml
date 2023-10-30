@@ -41,16 +41,16 @@ spec:
                 configMapKeyRef:
                   name: todo-java-configmap
                   key: spring_active_profiles
+            - name: H2_CONSOLE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-java-configmap
+                  key: h2_console_enabled
             - name: DATASOURCE_URL
               valueFrom:
                 configMapKeyRef:
                   name: todo-java-configmap
                   key: datasource_url
-            - name: DATASOURCE_DRIVER_CLASSNAME
-              valueFrom:
-                configMapKeyRef:
-                  name: todo-java-configmap
-                  key: datasource_driver_classname
             - name: JPA_DIALECT
               valueFrom:
                 configMapKeyRef:
