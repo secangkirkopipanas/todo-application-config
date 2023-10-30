@@ -8,11 +8,17 @@
 ## Prerequisites
 
 - All projects are stored in GitHub repository
-- Openshift Pipeline operator is installed
-- Openshift GitOps operator is installed
-- ACS operator is installed and configured
-- Quay operator is installed
-- Sealed Secret operator (Bitnami) is installed
+  - TODO application (Java)
+    > Fork from this project: https://github.com/secangkirkopipanas/todo-application
+  - TODO application (.NET)
+    > Fork from this project: https://github.com/secangkirkopipanas/todo-dotnet-application
+  - TODO application infrastructure configuration
+    > Fork from this project: https://github.com/secangkirkopipanas/todo-application-infra
+- [Openshift Pipeline](https://www.redhat.com/en/technologies/cloud-computing/openshift/pipelines) operator is installed
+- [Openshift GitOps](https://www.redhat.com/en/technologies/cloud-computing/openshift/gitops) operator is installed
+- [ACS](https://www.redhat.com/en/technologies/cloud-computing/openshift/advanced-cluster-security-kubernetes) operator is installed and configured
+- [Quay](https://www.redhat.com/en/technologies/cloud-computing/quay) operator is installed
+- [Sealed Secret operator (Bitnami)](https://github.com/bitnami-labs/sealed-secrets) is installed
 - Required namespaces:
   - For pipeline and deployment to Dev:
     - todo-dev
