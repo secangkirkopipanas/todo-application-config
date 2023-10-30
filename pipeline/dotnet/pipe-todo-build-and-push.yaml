@@ -52,7 +52,7 @@ spec:
       workspaces:
         - name: output
           workspace: workspace
-    - name: build
+    - name: build-and-push
       params:
         - name: IMAGE
           value: $(params.IMAGE_NAME)
@@ -63,7 +63,6 @@ spec:
       runAfter:
         - fetch-source
       taskRef:
-        kind: Task
         name: s2i-dotnet
       workspaces:
         - name: source
@@ -83,9 +82,8 @@ spec:
         - name: insecure-skip-tls-verify
           value: 'true'
       runAfter:
-        - build
+        - build-and-push
       taskRef:
-        kind: Task
         name: acs-image-scan
     - name: acs-image-check
       params:
@@ -102,7 +100,6 @@ spec:
       runAfter:
         - acs-image-scan
       taskRef:
-        kind: Task
         name: acs-image-check
     - name: update-manifest-and-push
       params:
@@ -123,7 +120,6 @@ spec:
       runAfter:
         - acs-image-check
       taskRef:
-        kind: Task
         name: update-manifest
       workspaces:
         - name: infra-repo
