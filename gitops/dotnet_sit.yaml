@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: dotnet-sit-applicationset
+  name: todo-dotnet-sit-applicationset
 spec:
   generators:
   - list:
       elements:
-      - cluster: sit2
+      - cluster: sit-2
         url: https://kubernetes.default.svc
   template:
     metadata:
@@ -14,7 +14,7 @@ spec:
     spec:
       destination:
         name: ''
-        namespace: sit
+        namespace: todo-sit
         server: '{{url}}'
       source:
         path: deploy/app-dotnet/overlays/sit
