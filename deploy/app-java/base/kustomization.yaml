@@ -4,6 +4,7 @@ namespace: todo-dev
 resources:
 - sa-todo.yaml
 - rt-todo.yaml
+- sealed-todo-db.yaml
 - dep-todo.yaml
 - svc-todo.yaml
 - dep-todo-db.yaml
