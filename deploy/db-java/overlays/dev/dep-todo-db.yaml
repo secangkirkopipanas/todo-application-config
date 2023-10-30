@@ -1,10 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: todo-db
+  labels:
+    app.kubernetes.io/instance: todo-java-db
+    app.kubernetes.io/name: todo-java-db
+    app.openshift.io/runtime: postgresql
+  name: todo-java-db
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: todo-java-db
   template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: todo-java-db
+        app.kubernetes.io/name: todo-java-db
+        app.kubernetes.io/part-of: todo-java-app
+        app.openshift.io/runtime: postgresql
     spec:
       containers:
         - image: bitnami/postgresql:15.4.0-debian-11-r54
