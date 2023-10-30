@@ -10,8 +10,8 @@ configMapGenerator:
   - name: todo-configmap
     literals:
       - timezone="Asia/Singapore"
-      - java_options="-Xms1G -Xms1G"
-      - spring_active_profiles="dev"
-      - datasource_url="jdbc:h2:mem:todo"
-      - datasource_driver_classname="org.h2.Driver"
-      - jpa_dialect="org.hibernate.dialect.H2Dialect"
+      - java_options="-Xms1G -Xmx1G"
+      - spring_active_profiles="prod"
+      - datasource_url="jdbc:postgresql://todo-java-db-svc:5432/todo-java-prod-db"
+      - datasource_driver_classname="org.postgresql.Driver"
+      - jpa_dialect="org.hibernate.dialect.PostgreSQLDialect"
