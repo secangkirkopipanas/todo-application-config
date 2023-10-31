@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: todo-dotnet-app
+  name: todo-dotnet-svc
   labels:
     app: todo-dotnet-app
     app.kubernetes.io/component: todo-dotnet-app
