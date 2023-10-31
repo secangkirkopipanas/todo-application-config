@@ -83,7 +83,6 @@ spec:
           livenessProbe:
             failureThreshold: 5
             httpGet:
-              host: ''
               path: /management/info
               port: 8080
               scheme: HTTP
@@ -91,7 +90,6 @@ spec:
             failureThreshold: 5
             successThreshold: 1
             httpGet:
-              host: ''
               path: /management/info
               port: 8080
               scheme: HTTP
@@ -99,7 +97,6 @@ spec:
             failureThreshold: 5
             successThreshold: 1
             httpGet:
-              host: ''
               path: /management/info
               port: 8080
               scheme: HTTP
