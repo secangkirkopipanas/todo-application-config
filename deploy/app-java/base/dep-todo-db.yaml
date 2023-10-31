@@ -66,5 +66,4 @@ spec:
             runAsNonRoot: true
       dnsPolicy: ClusterFirst
       restartPolicy: Always
-      serviceAccountName: todo-app
       terminationGracePeriodSeconds: 30
