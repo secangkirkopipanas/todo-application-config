@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: todo-dev
 resources:
   - rt-todo.yaml
-  - sealed-todo-db.yaml
   - dep-todo.yaml
   - svc-todo.yaml
   - dep-todo-db.yaml
