@@ -46,6 +46,11 @@ spec:
                 configMapKeyRef:
                   name: todo-java-configmap
                   key: h2_console_enabled
+            - name: DATASOURCE_DRIVER_CLASSNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-java-configmap
+                  key: datasource_driver_classname
             - name: DATASOURCE_URL
               valueFrom:
                 configMapKeyRef:

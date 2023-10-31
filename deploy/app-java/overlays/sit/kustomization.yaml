@@ -15,6 +15,7 @@ configMapGenerator:
       - java_options="-Xms512M -Xmx1G"
       - spring_active_profiles="sit"
       - h2_console_enabled="false"
+      - datasource_driver_classname="org.postgresql.Driver"
       - datasource_url="jdbc:postgresql://todo-java-db-svc:5432/todo-java-sit-db"
       - jpa_dialect="org.hibernate.dialect.PostgreSQLDialect"
   - name: todo-java-db-configmap
