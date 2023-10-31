@@ -10,4 +10,4 @@ spec:
       containers:
         - name: todo-java-app
           image: >-
-            quay.io/rh_rh/todo-java:614ef865e2
+            quay.io/rh_rh/todo-java:9f24bd4c89
