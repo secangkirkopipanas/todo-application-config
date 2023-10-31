@@ -22,6 +22,7 @@
   > v4.2.2
 - [Quay](https://www.redhat.com/en/technologies/cloud-computing/quay) operator is installed
   > v3.9.3
+  > This operator requires Red Hat OpenShift Data Foundation operator
 - [Sealed Secret operator (Bitnami)](https://github.com/bitnami-labs/sealed-secrets) is installed
   > latest version
 - Required namespaces:
