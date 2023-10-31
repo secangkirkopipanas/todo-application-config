@@ -38,12 +38,18 @@
 ### Check role for openshift-gitops namespace
 
 ```
-$ oc patch cm/argocd-rbac-cm -n openshift-gitops --type=merge -p '{"data": { "policy.default": "role:admin" } }'
+oc patch cm/argocd-rbac-cm -n <target-namespace> --type=merge -p '{"data": { "policy.default": "role:admin" } }'
+```
+
+### Give permission to Service Account for specific deployment namespace
+
+```
+oc adm policy add-role-to-user admin system:serviceaccount:openshift-gitops:openshift-gitops-argocd-application-controller -n <target-namespace>
 ```
 
 ### Command to generate sealed secrets from secrets YAML
 
 ```
-$ kubeseal --format yaml < [source-secrets.yaml] > [target-sealed-secrets].yaml
+kubeseal --format yaml < [source-secrets.yaml] > [target-sealed-secrets].yaml
 ```
 > Notes: Get all necessary token from all operators to create secrets. Then generate the sealed secrets with `kubeseal` command.
