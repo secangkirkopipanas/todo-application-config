@@ -8,6 +8,7 @@ patches:
   - path: dep-todo.yaml
   - path: dep-todo-db.yaml
   - path: sealed-secrets-todo.yaml
+  - path: cluster-role-sealed-secrets.yaml
 
 configMapGenerator:
   - name: todo-java-configmap
