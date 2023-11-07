@@ -7,6 +7,7 @@ resources:
 patches:
   - path: dep-todo.yaml
   - path: dep-todo-db.yaml
+  - path: sealed-secrets-todo.yaml
   
 configMapGenerator:
   - name: todo-java-configmap

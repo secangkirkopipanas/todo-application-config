@@ -26,6 +26,8 @@ spec:
         app.kubernetes.io/part-of: todo-java-app
         app.openshift.io/runtime: postgresql
     spec:
+      imagePullSecrets:
+        - name: image-registry-secret
       containers:
         - env:
             - name: TZ
