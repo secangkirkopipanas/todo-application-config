@@ -93,7 +93,7 @@ spec:
         - name: appGitRef
           value: $(params.SOURCE_CODE_GIT_REF)
         - name: appName
-          value: app-java
+          value: app-dotnet
       runAfter:
         - update-manifest
       taskRef:

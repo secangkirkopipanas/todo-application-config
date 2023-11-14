@@ -68,7 +68,7 @@ spec:
         - name: skipPull
           value: "true"
         - name: appName
-          value: app-java
+          value: app-dotnet
       runAfter:
         - update-manifest
       taskRef:
