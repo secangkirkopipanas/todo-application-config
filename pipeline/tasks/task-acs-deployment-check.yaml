@@ -82,6 +82,8 @@ spec:
           ENV=prod
         fi
 
+        ls -al $(workspaces.source.path)/infra/
+        
         cd $(workspaces.source.path)/infra/deploy/$(params.appName)/overlays/$ENV
 
         mkdir -p $(workspaces.source.path)/infra/input
