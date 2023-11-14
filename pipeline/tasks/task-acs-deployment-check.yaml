@@ -80,12 +80,16 @@ spec:
           ENV=prod
         fi
 
+        echo "ENV: $ENV"
+
         cd infra/deploy/app-java/overlays/$ENV
 
         mkdir -p $(workspaces.source.path)/infra/input
         mkdir -p $(workspaces.source.path)/infra/output
 
         kustomize build . --output $(workspaces.source.path)/infra/input/all.yaml
+
+        cat $(workspaces.source.path)/infra/input/all.yaml
       workingDir: $(workspaces.source.path)
     - image: looztra/kubesplit
       name: kustomize-split
