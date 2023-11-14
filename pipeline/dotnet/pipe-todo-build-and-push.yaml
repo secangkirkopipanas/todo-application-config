@@ -28,9 +28,6 @@ spec:
       description: Git ref of infra code repo
       name: INFRA_GIT_REF
       type: string
-    - description: Last Git commit ID
-      name: GIT_COMMIT_ID
-      type: string
     - default: deploy/app-dotnet/overlays/dev/dep-todo-dev.yaml
       description: Path to deployment manifest
       name: MANIFEST_FILE
@@ -57,7 +54,7 @@ spec:
         - name: IMAGE
           value: $(params.IMAGE_NAME)
         - name: GIT_COMMIT_ID
-          value: $(params.GIT_COMMIT_ID)
+          value: $(tasks.fetch-source.results.commit)
         - name: TLSVERIFY
           value: 'false'
       runAfter:
@@ -78,7 +75,7 @@ spec:
         - name: image
           value: $(params.IMAGE_NAME)
         - name: git_commit_id
-          value: $(params.GIT_COMMIT_ID)
+          value: $(tasks.fetch-source.results.commit)
         - name: insecure-skip-tls-verify
           value: 'true'
       runAfter:
@@ -94,7 +91,7 @@ spec:
         - name: image
           value: $(params.IMAGE_NAME)
         - name: git_commit_id
-          value: $(params.GIT_COMMIT_ID)
+          value: $(tasks.fetch-source.results.commit)
         - name: insecure-skip-tls-verify
           value: 'true'
       runAfter:

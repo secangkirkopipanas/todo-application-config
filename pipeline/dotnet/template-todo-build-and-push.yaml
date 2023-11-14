@@ -35,8 +35,6 @@ spec:
           value: "https://github.com/secangkirkopipanas/todo-application-infra.git"
         - name: INFRA_GIT_REF
           value: main
-        - name: GIT_COMMIT_ID
-          value: "$(tt.params.git-revision)"
         - name: IMAGE_NAME
           value: quay.io/rh_rh/todo-dotnet
         - name: MANIFEST_FILE
