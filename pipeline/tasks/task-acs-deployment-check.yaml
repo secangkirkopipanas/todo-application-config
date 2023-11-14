@@ -102,7 +102,7 @@ spec:
 
         set -eu -o pipefail
 
-        kubesplit -c -i $(workspaces.source.path)/infra/input/all.yaml -o $(workspaces.source.path)/infra/output
+        kubesplit -i $(workspaces.source.path)/infra/input/all.yaml -o $(workspaces.source.path)/infra/output
       workingDir: $(workspaces.source.path)
     - env:
         - name: ROX_API_TOKEN
@@ -126,7 +126,7 @@ spec:
         
         cd $(workspaces.source.path)/infra/output
 
-        ls -al
+        cd todo-sit
 
         echo "StackRox Central URL: $ROX_CENTRAL_ENDPOINT"
         echo "StackRox API Token: $ROX_API_TOKEN"
@@ -137,7 +137,7 @@ spec:
           > /dev/null
 
         chmod +x ./roxctl > /dev/null
-        DEPLOYMENT_FILE=$(find . -print | grep -i deployment)
+        DEPLOYMENT_FILE=$(ls -1a | grep deployment)
         echo "DEPLOYMENT_FILE: $DEPLOYMENT_FILE"
 
         echo "Checking deployment file with 'roxctl' command..."
