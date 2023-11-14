@@ -7,5 +7,4 @@ resources:
   - svc-todo.yaml
   - dep-todo-db.yaml
   - svc-todo-db.yaml
-  - sealed-secrets-todo.yaml
-  - cluster-role-sealed-secrets.yaml
+  - sealed-secrets-todo.yaml  
