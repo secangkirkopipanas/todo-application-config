@@ -126,8 +126,6 @@ spec:
         
         cd $(workspaces.source.path)/infra/output
 
-        cd todo-sit
-
         echo "StackRox Central URL: $ROX_CENTRAL_ENDPOINT"
         echo "StackRox API Token: $ROX_API_TOKEN"
 
@@ -137,9 +135,8 @@ spec:
           > /dev/null
 
         chmod +x ./roxctl > /dev/null
-        DEPLOYMENT_FILE=$(ls -1a | grep deployment)
+        DEPLOYMENT_FILE=$(ls -1a -- **/*deployment--*-app*)
         echo "DEPLOYMENT_FILE: $DEPLOYMENT_FILE"
-        cat $DEPLOYMENT_FILE
 
         echo "Checking deployment file with 'roxctl' command..."
         ./roxctl deployment check \
