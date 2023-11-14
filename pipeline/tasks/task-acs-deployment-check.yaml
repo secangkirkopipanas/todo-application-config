@@ -82,7 +82,7 @@ spec:
           ENV=prod
         fi
 
-        cd infra/deploy/$appName/overlays/$ENV
+        cd infra/deploy/$(params.appName)/overlays/$ENV
 
         mkdir -p $(workspaces.source.path)/infra/input
         mkdir -p $(workspaces.source.path)/infra/output
