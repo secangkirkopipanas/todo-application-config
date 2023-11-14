@@ -139,9 +139,6 @@ spec:
         chmod +x ./roxctl > /dev/null
         DEPLOYMENT_FILE=$(ls -1a | grep deployment)
         echo "DEPLOYMENT_FILE: $DEPLOYMENT_FILE"
-        
-        export ROX_API_TOKEN=$(echo "$ROX_API_TOKEN" | base64 -d)
-        echo $ROX_API_TOKEN
 
         echo "Checking deployment file with 'roxctl' command..."
         ./roxctl deployment check \
