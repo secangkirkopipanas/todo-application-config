@@ -98,6 +98,8 @@ spec:
           value: "true"
         - name: appGitRef
           value: $(params.SOURCE_CODE_GIT_REF)
+        - name: appName
+          value: app-java
       workspaces:
         - name: source
           workspace: infra-repo

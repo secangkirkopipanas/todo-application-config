@@ -67,6 +67,8 @@ spec:
           value: $(params.INFRA_GIT_REF)``
         - name: skipPull
           value: "true"
+        - name: appName
+          value: app-java
       runAfter:
         - update-manifest
       taskRef:
