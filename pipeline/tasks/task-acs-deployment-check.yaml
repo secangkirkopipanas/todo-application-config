@@ -137,7 +137,7 @@ spec:
           > /dev/null
 
         chmod +x ./roxctl > /dev/null
-        DEPLOYMENT_FILE=$(ls -1a | grep deployment)
+        DEPLOYMENT_FILE=$(find . -print | grep -i deployment)
         echo "DEPLOYMENT_FILE: $DEPLOYMENT_FILE"
 
         echo "Checking deployment file with 'roxctl' command..."
