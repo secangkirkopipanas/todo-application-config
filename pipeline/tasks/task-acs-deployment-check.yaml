@@ -102,7 +102,7 @@ spec:
 
         set -eu -o pipefail
 
-        kubesplit -i $(workspaces.source.path)/infra/input/all.yaml -o $(workspaces.source.path)/infra/output
+        kubesplit -c -i $(workspaces.source.path)/infra/input/all.yaml -o $(workspaces.source.path)/infra/output
       workingDir: $(workspaces.source.path)
     - env:
         - name: ROX_API_TOKEN
