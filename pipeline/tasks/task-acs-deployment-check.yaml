@@ -126,6 +126,8 @@ spec:
         
         cd $(workspaces.source.path)/infra/output
 
+        ls -al
+
         echo "StackRox Central URL: $ROX_CENTRAL_ENDPOINT"
         echo "StackRox API Token: $ROX_API_TOKEN"
 
