@@ -56,7 +56,13 @@ spec:
 
         set -eu -o pipefail
 
+        
         if [ "$(params.skipPull)" == "false" ]; then
+          if [ -d $(pwd)/infra/deploy ]; then
+            rm -fR $(pwd)/infra
+            mkdir $(pwd)/infra
+          fi
+          
           git clone "$(params.gitRepositoryUrl)" $(pwd)/infra
           cd infra
           git checkout "$(params.gitRepositoryRevision)"
