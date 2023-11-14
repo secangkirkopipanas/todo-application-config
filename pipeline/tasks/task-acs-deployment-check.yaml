@@ -83,7 +83,7 @@ spec:
         fi
 
         ls -al $(workspaces.source.path)/infra/
-        
+
         cd $(workspaces.source.path)/infra/deploy/$(params.appName)/overlays/$ENV
 
         mkdir -p $(workspaces.source.path)/infra/input
@@ -133,6 +133,8 @@ spec:
           "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
           --output ./roxctl  \
           > /dev/null
+
+        ls -R
 
         chmod +x ./roxctl > /dev/null
         DEPLOYMENT_FILE=$(ls -1a -- **/*deployment--*-app*)
