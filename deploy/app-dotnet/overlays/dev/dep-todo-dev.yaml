@@ -9,4 +9,4 @@ spec:
       containers:
         - name: todo-dotnet-app
           image: >-
-            quay.io/rh_rh/todo-dotnet:2fc2667826
+            quay.io/rh_rh/todo-dotnet:168ed8039a
