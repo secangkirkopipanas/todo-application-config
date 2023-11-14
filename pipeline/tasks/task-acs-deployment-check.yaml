@@ -80,10 +80,6 @@ spec:
           ENV=prod
         fi
 
-        echo "ENV: $ENV"
-
-        cd infra/deploy/app-java/overlays/$ENV
-
         mkdir -p $(workspaces.source.path)/infra/input
         mkdir -p $(workspaces.source.path)/infra/output
 
