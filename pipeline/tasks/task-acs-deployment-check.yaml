@@ -35,8 +35,8 @@ spec:
         When set to `"true"`, skip verifying the TLS certs of the Central
         endpoint.  Defaults to `"false"`.
       name: insecure-skip-tls-verify
-      type: appName
-    - name: APP_NAME
+      type: string
+    - name: appName
       type: string
   workspaces:
     - name: source
