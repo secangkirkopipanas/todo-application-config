@@ -95,7 +95,7 @@ spec:
         - name: gitRepositoryRevision
           value: $(params.INFRA_GIT_REF)``
         - name: skipPull
-          value: "true"
+          value: "false"
         - name: appGitRef
           value: $(params.SOURCE_CODE_GIT_REF)
         - name: appName

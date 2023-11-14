@@ -66,7 +66,7 @@ spec:
         - name: gitRepositoryRevision
           value: $(params.INFRA_GIT_REF)``
         - name: skipPull
-          value: "true"
+          value: "false"
         - name: appName
           value: app-dotnet
       runAfter:
