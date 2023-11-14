@@ -24,9 +24,6 @@ spec:
       type: string
       default: quay.io/rh_rh/todo-java
       description: "Image name for application"
-    - name: GIT_COMMIT_ID
-      type: string
-      description: "Last Git commit ID"
   workspaces:
     - name: shared-workspace
       description: | 
@@ -92,7 +89,7 @@ spec:
         - name: IMAGE
           value: $(params.IMAGE)
         - name: GIT_COMMIT_ID
-          value: $(params.GIT_COMMIT_ID)
+          value: $(tasks.fetch-source.results.commit)
         - name: TLSVERIFY
           value: "false"
         - name: VERSION
@@ -112,7 +109,7 @@ spec:
         - name: image
           value: $(params.IMAGE)
         - name: git_commit_id
-          value: $(params.GIT_COMMIT_ID)
+          value: $(tasks.fetch-source.results.commit)
     - name: acs-image-check
       params:
         - name: rox_central_endpoint
@@ -124,7 +121,7 @@ spec:
         - name: insecure-skip-tls-verify
           value: 'true'
         - name: git_commit_id
-          value: $(params.GIT_COMMIT_ID)
+          value: $(tasks.fetch-source.results.commit)
       runAfter:
         - acs-image-scan
       taskRef:
@@ -149,7 +146,7 @@ spec:
         - name: image
           value: $(params.IMAGE)
         - name: imageTagName
-          value: "$(params.GIT_COMMIT_ID)"
+          value: $(tasks.fetch-source.results.commit)
       workspaces:
         - name: infra-repo
           workspace: infra-repo
