@@ -122,6 +122,9 @@ spec:
         
         cd $(workspaces.source.path)/infra/output
 
+        echo "StackRox Central URL: $ROX_CENTRAL_ENDPOINT"
+        echo "StackRox API Token: $ROX_API_TOKEN"
+
         curl -s -k -L -H "Authorization: Bearer $ROX_API_TOKEN" \
           "https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux" \
           --output ./roxctl  \
