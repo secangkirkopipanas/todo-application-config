@@ -46,6 +46,22 @@ spec:
   steps:
     - image: 'quay.io/rh_rh/pipeline-utils:latest'
       name: git-checkout
+      env:
+        - name: GITHUB_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: github-credentials
+              key: "email"
+        - name: GITHUB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: github-credentials
+              key: "username"
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-credentials
+              key: "token"
       script: |
         #!/usr/bin/env bash
         set +x
@@ -56,7 +72,12 @@ spec:
 
         set -eu -o pipefail
 
-        
+        printf -- "-> Configuring environment... "
+        git config --global user.email "$GITHUB_EMAIL"
+        git config --global user.name "$GITHUB_USERNAME"
+        git config --global credential.helper store
+        printf "Done!\n"
+
         if [ "$(params.skipPull)" == "false" ]; then
           if [ -d $(pwd)/infra/deploy ]; then
             rm -fR $(pwd)/infra
